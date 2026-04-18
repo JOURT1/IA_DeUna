@@ -29,9 +29,9 @@ export class SpeechService {
         }
 
         this.recognition = new SpeechRecognition();
-        this.recognition.lang = 'es-ES';
+        this.recognition.lang = 'es-EC';
         this.recognition.continuous = false;
-        this.recognition.interimResults = true;
+        this.recognition.interimResults = true; // Volver a habilitar para que vea el texto mientras habla
 
         this.recognition.onresult = (event: any) => {
             this.ngZone.run(() => {
@@ -55,6 +55,7 @@ export class SpeechService {
         };
 
         this.recognition.onerror = (event: any) => {
+            console.error('Speech Recognition Error:', event.error);
             this.ngZone.run(() => {
                 this.isListening = false;
                 this.events$.next({ type: 'error', error: event.error });
@@ -85,22 +86,38 @@ export class SpeechService {
     }
 
     start(): void {
-        if (this.recognition && !this.isListening) {
-            try {
-                this.recognition.start();
-            } catch (e) {
-                console.error('Error starting speech recognition:', e);
+        if (!this.recognition) return;
+
+        try {
+            this.recognition.start();
+            // No seteamos isListening aquí, esperamos al evento onstart
+        } catch (e: any) {
+            if (e.name === 'InvalidStateError') {
+                console.warn('El reconocimiento ya estaba iniciado, ignorando...');
+            } else {
+                console.error('Error al iniciar voz:', e);
+                this.ngZone.run(() => {
+                    this.isListening = false;
+                    this.events$.next({ type: 'error', error: e.message });
+                });
             }
         }
     }
 
     stop(): void {
-        if (this.recognition && this.isListening) {
+        if (!this.recognition) return;
+
+        try {
             this.recognition.stop();
+            // isListening se reseteará en onend
+        } catch (e) {
+            console.error('Error al detener voz:', e);
         }
     }
 
     toggle(): void {
+        if (!this.recognition) return;
+
         if (this.isListening) {
             this.stop();
         } else {

@@ -2,93 +2,198 @@
   <header class="chat-header">
     <div class="header-avatar">
       <div class="avatar-ring">
-        <div class="avatar-icon">🤖</div>
+        <div class="avatar-icon">💰</div>
       </div>
       <div class="status-dot"></div>
     </div>
     <div class="header-info">
-      <h1>ChatBot Assistant</h1>
+      <h1>Mi Contador de Bolsillo</h1>
       <span class="status-text">En línea</span>
+    </div>
+    <div class="header-controls">
+      @if (merchants.length > 1) {
+      <select class="merchant-select" [(ngModel)]="selectedMerchantId" (change)="onMerchantChange()">
+        @for (m of merchants; track m.merchantId) {
+        <option [value]="m.merchantId">{{ m.merchantName }}</option>
+        }
+      </select>
+      }
+      <button class="mode-toggle" (click)="toggleMode()"
+        [title]="mode === 'simple' ? 'Modo simple activo' : 'Modo completo activo'">
+        {{ mode === 'simple' ? '⚡' : '📊' }}
+        <span class="mode-label">{{ mode === 'simple' ? 'Simple' : 'Completo' }}</span>
+      </button>
     </div>
   </header>
 
+  <!-- Alerta proactiva -->
+  @if (proactiveAlert) {
+  <div class="proactive-alert" [class]="'severity-' + proactiveAlert.severity">
+    <div class="alert-content">
+      <span class="alert-icon">{{ getSeverityIcon(proactiveAlert.severity) }}</span>
+      <div class="alert-text">
+        <strong>{{ proactiveAlert.title }}</strong>
+        <p>{{ proactiveAlert.message }}</p>
+      </div>
+      <button class="alert-dismiss" (click)="dismissAlert()">✕</button>
+    </div>
+  </div>
+  }
+
   <div class="chat-messages" #messagesContainer>
-    @for (message of messages; track message.timestamp) {
-      <div class="message" [class.user]="message.sender === 'user'" [class.bot]="message.sender === 'bot'">
-        @if (message.sender === 'bot') {
-          <div class="message-avatar">🤖</div>
-        }
+    @for (message of messages; track $index) {
+    <div class="message" [class.user]="message.sender === 'user'" [class.bot]="message.sender === 'bot'">
+      @if (message.sender === 'bot') {
+      <div class="message-avatar">💰</div>
+      }
+      <div class="message-content">
         <div class="message-bubble">
-          <p>{{ message.text }}</p>
+          <p class="message-text">{{ message.text }}</p>
           <span class="message-time">{{ formatTime(message.timestamp) }}</span>
         </div>
-        @if (message.sender === 'user') {
-          <div class="message-avatar user-avatar">👤</div>
+
+        <!-- Visualización: tabla -->
+        @if (message.visualization && message.visualization.type === 'table') {
+        <div class="viz-container">
+          <h4 class="viz-title">{{ message.visualization.title }}</h4>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  @for (header of message.visualization.data.headers; track header) {
+                  <th>{{ header }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of message.visualization.data.rows; track $index) {
+                <tr>
+                  @for (cell of row; track $index) {
+                  <td>{{ cell }}</td>
+                  }
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+        }
+
+        <!-- Visualización: gráfico bar/line/pie (simple CSS) -->
+        @if (message.visualization && message.visualization.type !== 'table') {
+        <div class="viz-container">
+          <h4 class="viz-title">{{ message.visualization.title }}</h4>
+          @if (message.visualization.type === 'bar' || message.visualization.type === 'line') {
+          <div class="chart-bars">
+            @for (label of message.visualization.data.labels; track label; let i = $index) {
+            <div class="bar-item">
+              <div class="bar-fill" [style.height.%]="getBarHeight(message.visualization!.data.values, i)">
+                <span class="bar-value">${{ message.visualization!.data.values[i] }}</span>
+              </div>
+              <span class="bar-label">{{ formatBarLabel(label) }}</span>
+            </div>
+            }
+          </div>
+          }
+          @if (message.visualization.type === 'pie') {
+          <div class="pie-list">
+            @for (label of message.visualization.data.labels; track label; let i = $index) {
+            <div class="pie-item">
+              <span class="pie-dot" [style.background]="getPieColor(i)"></span>
+              <span class="pie-label">{{ label }}</span>
+              <span class="pie-value">${{ message.visualization!.data.values[i] }}</span>
+            </div>
+            }
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Follow-ups sugeridos -->
+        @if (message.suggestedFollowUps && message.suggestedFollowUps.length > 0) {
+        <div class="follow-ups">
+          @for (q of message.suggestedFollowUps; track q) {
+          <button class="follow-up-chip" (click)="askSuggested(q)">{{ q }}</button>
+          }
+        </div>
         }
       </div>
+      @if (message.sender === 'user') {
+      <div class="message-avatar user-avatar">👤</div>
+      }
+    </div>
     }
 
     @if (isTyping) {
-      <div class="message bot">
-        <div class="message-avatar">🤖</div>
+    <div class="message bot">
+      <div class="message-avatar">💰</div>
+      <div class="message-content">
         <div class="message-bubble typing-bubble">
           <div class="typing-indicator">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span>
           </div>
         </div>
       </div>
+    </div>
     }
   </div>
 
-  <div class="chat-input-area">
-    @if (isListening) {
+  <!-- Chips de preguntas sugeridas (solo al inicio) -->
+  @if (messages.length <= 1 && sampleQuestions.length> 0) {
+    <div class="suggested-section">
+      <span class="suggested-label">Prueba preguntando:</span>
+      <div class="suggested-chips">
+        @for (q of sampleQuestions; track q.intent) {
+        <button class="chip" (click)="askSuggested(q.question)">{{ q.question }}</button>
+        }
+      </div>
+    </div>
+    }
+
+    <div class="chat-input-area">
+      @if (isListening) {
       <div class="listening-indicator">
         <div class="pulse-ring"></div>
         <span>🎤 Escuchando...</span>
       </div>
-    }
-    <div class="input-wrapper">
-      <input
-        type="text"
-        [(ngModel)]="currentMessage"
-        (keyup.enter)="sendMessage()"
-        placeholder="Escribe un mensaje..."
-        id="chatInput"
-        autocomplete="off"
-      />
-      @if (speechSupported) {
-        <button
-          class="voice-btn"
-          [class.active]="isListening"
-          (click)="toggleVoice()"
-          id="voiceBtn"
-          [attr.aria-label]="isListening ? 'Detener reconocimiento de voz' : 'Iniciar reconocimiento de voz'"
-        >
+      }
+      <div class="input-wrapper" [class.recording]="isListening">
+        @if (!isListening) {
+        <input type="text" [(ngModel)]="currentMessage" (keyup.enter)="sendMessage()"
+          placeholder="Pregunta sobre tu negocio..." id="chatInput" autocomplete="off" />
+        } @else {
+        <div class="recording-overlay">
+          <div class="wave-container">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <span class="timer">{{ formatDuration(recordingSeconds) }}</span>
+          <span class="recording-text">{{ currentMessage || 'Escuchando...' }}</span>
+        </div>
+        }
+
+        @if (speechSupported) {
+        <button class="voice-btn" [class.active]="isListening" (click)="toggleVoice()" id="voiceBtn"
+          [attr.aria-label]="isListening ? 'Detener' : 'Hablar'">
           @if (isListening) {
-            <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-              <rect x="6" y="6" width="12" height="12" rx="2"/>
-            </svg>
+          <div class="stop-icon"></div>
           } @else {
-            <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-            </svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+            <path
+              d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+          </svg>
           }
         </button>
-      }
-      <button
-        class="send-btn"
-        (click)="sendMessage()"
-        [disabled]="!currentMessage.trim()"
-        id="sendBtn"
-        aria-label="Enviar mensaje"
-      >
-        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-        </svg>
-      </button>
+        }
+
+        @if (!isListening) {
+        <button class="send-btn" (click)="sendMessage()" [disabled]="!currentMessage.trim()" id="sendBtn"
+          aria-label="Enviar mensaje">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+          </svg>
+        </button>
+        }
+      </div>
     </div>
-  </div>
 </div>
