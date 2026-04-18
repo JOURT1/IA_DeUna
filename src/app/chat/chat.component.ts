@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ChatMessage, ChatService } from './chat.service';
 import { SpeechService } from './speech.service';
@@ -24,8 +25,13 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     constructor(
         private chatService: ChatService,
-        private speechService: SpeechService
+        private speechService: SpeechService,
+        private router: Router
     ) { }
+
+    goBack(): void {
+        this.router.navigate(['/']);
+    }
 
     ngOnInit(): void {
         this.speechSupported = this.speechService.isSupported;
