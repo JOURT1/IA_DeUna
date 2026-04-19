@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "cd server && npm start",
+    "dev": "ng serve",
     "start:server": "cd server && npm run dev",
-    "dev": "concurrently --names ANGULAR,SERVER --prefix-colors blue,green \"ng serve\" \"cd server && npx tsx watch src/index.ts\"",
+    "dev:concurrent": "concurrently --names ANGULAR,SERVER --prefix-colors blue,green \"ng serve\" \"cd server && npx tsx watch src/index.ts\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

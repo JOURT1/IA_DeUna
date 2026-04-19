@@ -55,8 +55,8 @@ async function start(): Promise<void> {
 
     await configureLLM();
 
-    app.listen(PORT, () => {
-        console.log(`🚀 Mi Contador de Bolsillo — Backend corriendo en http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 Mi Contador de Bolsillo — Backend corriendo en http://0.0.0.0:${PORT}`);
         console.log(`   Endpoints:`);
         console.log(`   - GET  /api/health`);
         console.log(`   - POST /api/chat`);
