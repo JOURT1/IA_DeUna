@@ -11,6 +11,7 @@ export interface LLMProvider {
         metricsUsed: string[];
     }): Promise<string>;
     classifyIntent(message: string, intents: { intent: string; description: string }[]): Promise<string>;
+    handleGeneralQuery(message: string, merchantName: string): Promise<string>;
 }
 
 let currentProvider: LLMProvider | null = null;

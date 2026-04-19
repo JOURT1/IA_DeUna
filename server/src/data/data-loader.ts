@@ -3,7 +3,7 @@
 // ============================================
 // Para reemplazar con API real: modifica solo este archivo.
 
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import type { DataSet, MerchantData, Transaction } from '../types/index.js';
@@ -15,7 +15,15 @@ let cachedData: DataSet | null = null;
 export function loadDataSet(): DataSet {
     if (cachedData) return cachedData;
 
-    const filePath = join(__dirname, 'transactions.json');
+    const candidates = [
+        join(__dirname, 'transactions.json'),
+        join(process.cwd(), 'src', 'data', 'transactions.json'),
+        join(__dirname, '..', '..', 'src', 'data', 'transactions.json')
+    ];
+    const filePath = candidates.find(path => existsSync(path));
+    if (!filePath) {
+        throw new Error('No se encontró transactions.json en src/data ni junto al build.');
+    }
     const raw = readFileSync(filePath, 'utf-8');
     const parsed = JSON.parse(raw);
 

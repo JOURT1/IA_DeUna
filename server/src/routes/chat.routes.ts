@@ -4,21 +4,18 @@
 
 import { Router, type Request, type Response } from 'express';
 import * as analytics from '../analytics/analytics.engine.js';
-import { detectIntent, getIntentDef, getSampleQuestions, extractDateFromMessage } from '../intents/intent-router.js';
+import { detectIntent, getIntentDef, getSampleQuestions, extractDateFromMessage, extractYearFromMessage } from '../intents/intent-router.js';
 import { generateProactiveAlerts, getTopAlert } from '../alerts/proactive-alerts.js';
 import { getAllMerchants, getMerchantData, getCompletedTransactions } from '../data/data-loader.js';
 import { getLLMProvider } from '../llm/llm-adapter.js';
 import { LLMCache } from '../llm/llm-cache.js';
+import { getCurrentEcuadorDate } from '../utils/date-utils.js';
 import type { ChatRequest, ChatResponse, AnalyticsResult } from '../types/index.js';
 
 export const chatRouter = Router();
 
-// ─── Utilidad: obtener fecha de referencia del dataset ──
-function getRefDate(merchantId?: string): Date {
-    const txns = getCompletedTransactions(merchantId);
-    if (txns.length === 0) return new Date();
-    const dates = txns.map(t => new Date(t.date).getTime());
-    return new Date(Math.max(...dates));
+function getRefDate(_merchantId?: string): Date {
+    return getCurrentEcuadorDate();
 }
 
 // ─── POST /api/chat ────────────────────────────────────
@@ -74,6 +71,19 @@ chatRouter.post('/chat', async (req: Request, res: Response): Promise<void> => {
                 } else {
                     // Fallback: si no pudo parsear la fecha, usar ventas del mes
                     result = analytics.getSalesForPeriod('month', merchantId);
+                }
+                break;
+            }
+            case 'sales_specific_year': {
+                const refDate = getRefDate(merchantId);
+                const year = extractYearFromMessage(message, refDate);
+
+                if (year) {
+                    result = analytics.getSalesForYear(year, merchantId);
+                } else {
+                    // El usuario preguntó por el año sin ser específico (ej: "¿Cuánto vendí al año?")
+                    answer = "¿A qué año te refieres? Tengo registros detallados de tus ventas del 2024, 2025 y 2026. Dime un año y te doy el reporte.";
+                    followUps = ["2026", "2025", "2024"];
                 }
                 break;
             }
@@ -133,8 +143,14 @@ chatRouter.post('/chat', async (req: Request, res: Response): Promise<void> => {
                 followUps = [];
                 break;
             default:
-                answer = `No entendí bien tu pregunta. Intenta algo como:\n\n${getSampleQuestions().slice(0, 5).map(q => `• ${q.question}`).join('\n')}\n\nO escribe "ayuda" para ver todas las opciones.`;
-                followUps = getSampleQuestions().slice(0, 3).map(q => q.question);
+                if (llm.name !== 'noop') {
+                    answer = await llm.handleGeneralQuery(message, merchant.merchant.merchantName);
+                    // Provide a couple of high-value suggestions
+                    followUps = getSampleQuestions().slice(0, 2).map(q => q.question);
+                } else {
+                    answer = `No entendí bien tu pregunta. Intenta algo como:\n\n${getSampleQuestions().slice(0, 5).map(q => `• ${q.question}`).join('\n')}\n\nO escribe "ayuda" para ver todas las opciones.`;
+                    followUps = getSampleQuestions().slice(0, 3).map(q => q.question);
+                }
                 break;
         }
 
