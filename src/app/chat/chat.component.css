@@ -328,6 +328,13 @@
 
 .mic-btn:hover {
   background: #DDD6FE;
+  transform: scale(1.05);
+}
+
+.mic-btn.active {
+  background: #EF4444;
+  color: white;
+  animation: pulse-mic 1s infinite;
 }
 
 .send-btn {
@@ -841,6 +848,21 @@ td {
   border-top-color: #CCFBF1;
 }
 
+/* Mic Button Animation */
+@keyframes pulse-mic {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.3);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
 .pro-mode .input-pill {
   border-color: #99F6E4;
 }
@@ -876,3 +898,5 @@ td {
   color: #5B21B6;
   background: #F5F3FF;
 }
+/* ============================================
+ */

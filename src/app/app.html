@@ -1,1 +1,31 @@
+<!-- BOTONES SIMULADORES DE ALERTAS GLOBALES (Fuera del frame) -->
+<div class="alert-simulators">
+  <!-- CASO 1: Más ingresos -->
+  <button class="simulator-btn btn-success" (click)="simulateAlert1()" title="Esta semana: más ingresos">
+    <div class="btn-icon">📈</div>
+    <div class="btn-info">
+      <span class="btn-label">Caso 1</span>
+      <span class="btn-desc">Más ingresos</span>
+    </div>
+  </button>
+
+  <!-- CASO 2: Menos ingresos -->
+  <button class="simulator-btn btn-warning" (click)="simulateAlert2()" title="Esta semana: menos ingresos">
+    <div class="btn-icon">📉</div>
+    <div class="btn-info">
+      <span class="btn-label">Caso 2</span>
+      <span class="btn-desc">Menos ingresos</span>
+    </div>
+  </button>
+
+  <!-- CASO 3: Inactividad 12 horas -->
+  <button class="simulator-btn btn-info" (click)="simulateAlert3()" title="No consultas desde hace 12 horas">
+    <div class="btn-icon">⏱️</div>
+    <div class="btn-info">
+      <span class="btn-label">Caso 3</span>
+      <span class="btn-desc">12h inactivo</span>
+    </div>
+  </button>
+</div>
+
 <router-outlet />
