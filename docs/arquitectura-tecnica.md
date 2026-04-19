@@ -2,55 +2,46 @@
 
 ## Visión General
 
-Mi Contador de Bolsillo es un asistente conversacional para microcomerciantes ecuatorianos. El usuario pregunta en lenguaje natural sobre ventas, clientes, tendencias o productos, y la aplicación responde con números exactos, explicaciones simples y visualizaciones cuando aportan claridad.
+Mi Contador de Bolsillo es un asistente conversacional para microcomerciantes ecuatorianos. El usuario pregunta en lenguaje natural sobre ventas, clientes, tendencias, ticket promedio o productos, y la aplicación responde con datos exactos, lenguaje simple y visualizaciones cuando aportan claridad.
 
 El principio técnico central es **determinístico primero**: el backend calcula las métricas desde `server/src/data/transactions.json`; el LLM no suma ni consulta el dataset completo. La IA se usa para clasificar preguntas ambiguas y reformular resultados en español claro.
 
-## Stack Tecnológico
+## Stack
 
 | Capa | Tecnología | Uso |
 |---|---|---|
-| Frontend | Angular 20 standalone | Chat tipo app móvil, modo Simple/Pro, entrada por voz y visualizaciones. |
-| Backend | Node.js + Express + TypeScript | API REST, intents, analítica y conexión al LLM. |
+| Frontend | Angular 20 standalone | Chat, modo Simple/Pro, voz y visualizaciones. |
+| Backend | Node.js + Express + TypeScript | API REST, intents, analítica y LLM adapter. |
 | Datos | JSON en memoria | Dataset sintético de transacciones. |
-| IA / LLM | OpenAI GPT-4o-mini | Reformulación, clasificación fallback y límites de dominio. |
-| Fallback | NoOpProvider | Respuestas directas calculadas cuando no hay API key. |
-| Voz | Web Speech API | Entrada por voz en navegador. |
+| IA / LLM | OpenAI GPT-4o-mini configurable | Reformulación, clasificación fallback y límites de dominio. |
+| Fallback | NoOpProvider | Respuestas directas si no hay API key. |
+| Fechas | `date-utils.ts` | Fecha real de Ecuador para "hoy", "ayer", semana y mes. |
 
-## Arquitectura
+## Flujo Principal
 
 ```text
 Usuario
-  |
-  v
-Frontend Angular
-  - Chat UI
-  - Voz
-  - Toggle Simple/Pro
-  - Render de gráficos
-  |
-  v
-POST /api/chat { message, mode, merchantId }
-  |
-  v
-Backend Express
-  |
-  +--> Intent Router
-  |     - Regex
-  |     - Keywords
-  |     - LLM fallback si hay baja confianza
-  |
-  +--> Analytics Engine determinístico
-  |     - Filtra y agrega transacciones completadas
-  |     - Calcula ventas, ticket, clientes, productos, tendencias
-  |
-  +--> LLM Adapter
-  |     - Reformula labels calculados
-  |     - No recibe el dataset completo
-  |
-  v
-Respuesta { answer, detectedIntent, metricsUsed, visualization, suggestedFollowUps }
+  -> Frontend Angular
+  -> POST /api/chat { message, mode, merchantId }
+  -> chat.routes.ts
+  -> Intent Router
+  -> Analytics Engine determinístico
+  -> LLM Adapter
+  -> Respuesta { answer, detectedIntent, metricsUsed, visualization, suggestedFollowUps }
 ```
+
+## Fechas Relativas
+
+La lógica de fecha ya no usa una fecha quemada ni la última fecha del dataset. `getCurrentEcuadorDate()` obtiene la fecha real de Ecuador (`America/Guayaquil`) y esa referencia se usa para:
+
+| Expresión | Manejo |
+|---|---|
+| hoy / día de hoy | Fecha real de Ecuador. |
+| ayer / aller | Fecha real menos un día. |
+| anteayer | Fecha real menos dos días. |
+| esta semana | Semana actual de lunes a domingo. |
+| este mes | Mes calendario actual. |
+| fecha explícita | Se respeta tal como la pidió el usuario. |
 
 ## Dataset
 
@@ -62,9 +53,9 @@ El JSON contiene 3 comercios y 15,042 transacciones totales. Para la demo, `data
 | Café Internet Mary (`m002`) | servicios | 4,777 | 4,548 | $56,277.58 |
 | Restaurante Doña Lupita (`m003`) | restaurante | 7,303 | 6,921 | $157,519.90 |
 
-## Motor Analítico
+`data-loader.ts` también busca el JSON en rutas compatibles con `src` y `dist`, para que el backend pueda correr después de `npm run build`.
 
-El motor en `server/src/analytics/analytics.engine.ts` calcula todas las métricas:
+## Motor Analítico
 
 | Función | Métrica |
 |---|---|
@@ -78,19 +69,15 @@ El motor en `server/src/analytics/analytics.engine.ts` calcula todas las métric
 | `getSalesTrend`, `detectSignificantChange` | Tendencia y cambios relevantes |
 | `getTopProducts`, `getPaymentBreakdown` | Categorías y métodos de pago |
 
-## LLM y Prompts
+## LLM y Barreras
 
-El proveedor principal es `OpenAIProvider` con `gpt-4o-mini`. El prompt de reformulación indica:
+El LLM tiene tres usos controlados:
 
-- No inventar datos ni métricas.
-- Hablar en segunda persona.
-- Usar tono amigable y profesional.
-- En modo Simple, responder en 1-2 oraciones.
-- En modo Pro, explicar con más contexto.
-- Evitar jerga financiera.
-- Priorizar frases accionables.
+- Reformular labels calculados por backend.
+- Clasificar intents cuando las reglas tienen baja confianza.
+- Responder saludos/cálculos útiles y rechazar preguntas fuera del negocio.
 
-El prompt de clasificación exige responder solo con el nombre del intent y ser tolerante a errores ortográficos. El prompt de consultas generales permite cálculos útiles de caja y rechaza preguntas fuera del contexto de negocio.
+Aunque OpenAI pueda responder temas generales, el chatbot debe mantenerse en ventas, clientes, caja, productos y salud del negocio.
 
 ## Modos
 
@@ -99,21 +86,9 @@ El prompt de clasificación exige responder solo con el nombre del intent y ser 
 | `simple` | Respuesta breve para baja carga cognitiva. |
 | `complete` / Pro | Más contexto, recomendaciones y visualización cuando aplica. |
 
-## Manejo de Errores
-
-| Caso | Manejo |
-|---|---|
-| Mensaje vacío | HTTP 400. |
-| Intent desconocido | Respuesta guiada o sugerencias. |
-| Error de LLM | Se usa el label determinístico. |
-| Sin API key | Se usa NoOpProvider. |
-| Fecha sin datos | Respuesta explícita sin inventar ventas. |
-| Pregunta fuera de dominio | Rechazo cordial y foco en ventas/negocio. |
-| Error interno | HTTP 500 con mensaje controlado. |
-
 ## Validación
 
-La validación principal se ejecuta con `node run_tests.js` y se documenta en `Set_Pruebas_15_Preguntas_4NOVA_DeUna.pdf`.
+La validación se ejecuta con `node run_tests.js`. El runner calcula expectativas dinámicas desde `transactions.json` y la fecha real de Ecuador.
 
 | Grupo | Resultado |
 |---|---|
@@ -123,7 +98,8 @@ La validación principal se ejecuta con `node run_tests.js` y se documenta en `S
 
 ## Limitaciones
 
-- El backend fuerza `m001`; el selector multi-comercio está listo en interfaz, pero no habilitado en datos.
+- El backend fuerza `m001`; el selector multi-comercio está listo visualmente, pero no activo en datos.
 - El dataset es local y estático.
 - La caché es en memoria.
 - Las visualizaciones son simples a propósito para microcomerciantes.
+- Para producción faltan autenticación, permisos por comercio e integración con API real de DeUna.

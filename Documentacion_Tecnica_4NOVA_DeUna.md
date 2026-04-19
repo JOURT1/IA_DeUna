@@ -1,27 +1,27 @@
 <style>
-  @page { margin: 1.15cm; size: A4 landscape; }
+  @page { margin: 0.95cm; size: A4 landscape; }
   body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 10px;
-    line-height: 1.35;
-    color: #222;
+    font-size: 9px;
+    line-height: 1.34;
+    color: #202124;
   }
   h1 {
-    font-size: 22px;
+    font-size: 24px;
     color: #111;
-    border-bottom: 3px solid #eb0029;
-    padding-bottom: 6px;
+    border-bottom: 4px solid #eb0029;
+    padding-bottom: 7px;
     margin: 0 0 10px;
   }
   h2 {
     font-size: 15px;
-    color: #26384a;
-    margin: 15px 0 7px;
+    color: #16243a;
+    margin: 15px 0 8px;
   }
   h3 {
     font-size: 12px;
-    margin: 10px 0 5px;
     color: #111;
+    margin: 12px 0 6px;
   }
   p { margin: 5px 0; }
   table {
@@ -29,58 +29,132 @@
     border-collapse: collapse;
     table-layout: fixed;
     margin-top: 7px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  thead { display: table-header-group; }
+  tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
   th, td {
-    border: 1px solid #d7d7d7;
+    border: 1px solid #d9dee7;
     padding: 5px;
     vertical-align: top;
-    word-wrap: break-word;
     overflow-wrap: break-word;
+    word-wrap: break-word;
   }
   th {
-    background: #f1f4f8;
+    background: #eef2f7;
     color: #111;
     font-weight: 700;
   }
-  tr { page-break-inside: avoid; }
   code {
-    font-size: 8.5px;
-    background: #f6f6f6;
+    font-size: 8px;
+    background: #f3f5f8;
     padding: 1px 3px;
     border-radius: 3px;
   }
+  .muted { color: #5c6675; font-size: 8px; }
+  .hero,
+  .note,
+  .ok,
+  .diagram,
+  .flow,
+  .metric-grid,
+  .card-grid,
+  .section-card,
+  .timeline,
+  .module-grid {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .hero {
+    border: 1px solid #d9dee7;
+    border-left: 7px solid #eb0029;
+    background: #fbfcfe;
+    padding: 13px 15px;
+    margin: 8px 0 12px;
+  }
+  .hero-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 5px;
+  }
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 10px 0 12px;
+  }
+  .metric {
+    border: 1px solid #d9dee7;
+    background: #fff;
+    border-radius: 7px;
+    padding: 9px;
+  }
+  .metric .value {
+    font-size: 15px;
+    font-weight: 800;
+    color: #111;
+  }
+  .metric .label {
+    color: #5c6675;
+    font-size: 8px;
+    margin-top: 2px;
+  }
   .note {
-    border-left: 4px solid #eb0029;
+    border-left: 5px solid #eb0029;
     background: #fff7f8;
-    padding: 7px 9px;
+    padding: 8px 10px;
     margin: 8px 0;
   }
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .meta td:first-child,
-  .decision td:first-child {
-    width: 24%;
-    background: #fafafa;
-    font-weight: 700;
+  .ok {
+    border-left: 5px solid #16833b;
+    background: #f4fff7;
+    padding: 8px 10px;
+    margin: 8px 0;
   }
   .diagram {
     display: grid;
     grid-template-columns: 1fr 0.12fr 1fr 0.12fr 1fr 0.12fr 1fr;
-    gap: 5px;
+    gap: 6px;
     align-items: stretch;
     margin: 8px 0;
   }
-  .box {
-    border: 1px solid #cfd7e2;
-    border-radius: 6px;
-    padding: 7px;
-    background: #fbfcfe;
-    min-height: 72px;
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin: 8px 0;
   }
-  .box strong {
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .box,
+  .module,
+  .card {
+    border: 1px solid #ccd3df;
+    background: #fbfcfe;
+    border-radius: 7px;
+    padding: 8px;
+    min-height: 62px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .box strong,
+  .module strong,
+  .card strong {
     display: block;
     color: #111;
     margin-bottom: 3px;
@@ -90,122 +164,172 @@
     align-items: center;
     justify-content: center;
     color: #eb0029;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 18px;
   }
-  .flow {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 5px;
-    margin: 8px 0;
+  .section-card {
+    border: 1px solid #d9dee7;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    background: #ffffff;
   }
-  .flow .box { min-height: 56px; }
-  .small { font-size: 8.4px; color: #444; }
-  .compact { font-size: 8.1px; }
+  .mini-table td:first-child {
+    width: 24%;
+    background: #fafafa;
+    font-weight: 700;
+  }
+  .compact {
+    font-size: 7.7px;
+  }
+  .page-break { page-break-before: always; }
 </style>
 
 # Documentación Técnica Breve
+
+<div class="hero">
+  <div class="hero-title">Mi Contador de Bolsillo: arquitectura confiable para preguntas de negocio</div>
+  <p>El sistema permite que un microcomerciante pregunte en lenguaje natural sobre ventas, clientes, productos y tendencias. El backend calcula las métricas con reglas determinísticas sobre el dataset y el LLM solo ayuda a clasificar preguntas ambiguas y explicar los resultados en español claro.</p>
+  <p>La solución está diseñada para personas sin educación financiera formal: responde con números exactos, visualizaciones simples y recomendaciones accionables, sin obligar al usuario a leer dashboards complejos.</p>
+</div>
+
+<div class="metric-grid">
+  <div class="metric"><div class="value">Angular 20</div><div class="label">frontend chat, voz y gráficos</div></div>
+  <div class="metric"><div class="value">Express TS</div><div class="label">API REST y orquestación</div></div>
+  <div class="metric"><div class="value">19 intents</div><div class="label">ventas, clientes, productos y ayuda</div></div>
+  <div class="metric"><div class="value">100%</div><div class="label">15 pruebas principales</div></div>
+  <div class="metric"><div class="value">7/7</div><div class="label">anexos de barreras</div></div>
+</div>
 
 **Proyecto:** Mi Contador de Bolsillo - DeUna  
 **Equipo:** 4NOVA  
 **Entregable:** Documento corto con arquitectura, modelo/LLM, prompts, conexión al dataset y manejo de errores.  
 **Fecha:** 19 de abril de 2026  
-**Estado:** Prototipo funcional con interfaz chat, voz, modo Simple/Pro, analítica determinística y reformulación con IA.
+**Estado:** Prototipo funcional con interfaz chat, voz, modo Simple/Pro, analítica determinística, fechas relativas dinámicas y reformulación con IA.
 
-## 1. Visión general
+## 1. Resumen Ejecutivo
 
-Mi Contador de Bolsillo es un asistente conversacional para microcomerciantes ecuatorianos. El usuario pregunta en lenguaje natural sobre ventas, clientes, tendencias o productos, y la aplicación responde con números exactos, explicaciones simples y visualizaciones cuando ayudan a entender el negocio.
+La arquitectura separa con claridad las responsabilidades:
 
-El principio técnico central es **determinístico primero**: el backend calcula las métricas directamente desde `transactions.json`; el LLM no suma ni consulta el dataset completo. La IA se usa para clasificar preguntas ambiguas y reformular resultados en español claro, evitando jerga financiera.
-
-<div class="note">
-Objetivo de negocio: ayudar a personas sin educación financiera formal a tomar decisiones reales, como saber cuánto vendieron, qué días son fuertes, qué productos impulsan ingresos, qué clientes son frecuentes y qué acción conviene tomar.
+<div class="diagram">
+  <div class="box"><strong>Interfaz Angular</strong>Chat, entrada por voz, selector visual, modo Simple/Pro y render de visualizaciones.</div>
+  <div class="arrow">→</div>
+  <div class="box"><strong>API Express</strong>Recibe la pregunta, valida payload, selecciona comercio y coordina intent, cálculo y LLM.</div>
+  <div class="arrow">→</div>
+  <div class="box"><strong>Motor determinístico</strong>Calcula ventas, tendencias, clientes, ticket, categorías y alertas desde JSON.</div>
+  <div class="arrow">→</div>
+  <div class="box"><strong>LLM controlado</strong>Reformula resultados ya calculados. No recibe el dataset completo ni inventa métricas.</div>
 </div>
 
-## 2. Stack tecnológico
+<div class="note">
+Actualización importante: el proyecto ahora usa una utilidad centralizada de fecha real de Ecuador. Cuando el usuario dice "hoy", "ayer", "esta semana" o "este mes", la app calcula el periodo con <code>America/Guayaquil</code>; no usa una fecha quemada ni la última fecha del dataset.
+</div>
+
+## 2. Stack Tecnológico
 
 | Capa | Tecnología | Uso dentro del prototipo |
 |---|---|---|
-| Frontend | Angular 20 standalone | Chat tipo app móvil DeUna, modo Simple/Pro, entrada por texto/voz y visualizaciones CSS. |
-| Backend | Node.js + Express + TypeScript | API REST, enrutamiento de intents, analítica de negocio y conexión al LLM. |
-| Datos | JSON en memoria | Dataset sintético de transacciones cargado desde `server/src/data/transactions.json`. |
-| IA / LLM | OpenAI GPT-4o-mini | Reformulación natural, clasificación fallback y respuesta controlada ante preguntas generales. |
-| Fallback sin IA | NoOpProvider | Permite operar sin API key, devolviendo respuestas directas calculadas por backend. |
-| Voz | Web Speech API | Captura de voz en navegador para reducir barreras de escritura. |
-| Visualizaciones | CSS/HTML en Angular | Barras, líneas, tablas y distribución tipo pastel/progreso sin librerías pesadas. |
+| Frontend | Angular 20 standalone | Chat tipo app móvil DeUna, modo Simple/Pro, voz y visualizaciones. |
+| Backend | Node.js + Express + TypeScript | API REST, intents, analítica, manejo de errores y conexión LLM. |
+| Datos | JSON en memoria | Dataset sintético de transacciones en `server/src/data/transactions.json`. |
+| IA / LLM | OpenAI GPT-4o-mini configurable | Reformulación natural, clasificación fallback y manejo de consultas generales. |
+| Fallback sin IA | NoOpProvider | Respuestas directas y controladas si no hay API key o se desactiva OpenAI. |
+| Caché | LLMCache en memoria | Evita llamadas repetidas al LLM por intent y reformulación. |
+| Voz | Web Speech API | Reduce barreras de escritura para microcomerciantes. |
+| Visualizaciones | HTML/CSS en Angular | Barras, líneas, tablas y pastel/progreso sin librerías pesadas. |
 
-## 3. Diagrama de arquitectura
+## 3. Arquitectura General
 
-<div class="diagram">
-  <div class="box">
-    <strong>Frontend Angular</strong>
-    Chat UI, input de voz, toggle Simple/Pro, render de tablas y gráficos.
-  </div>
-  <div class="arrow">→</div>
-  <div class="box">
-    <strong>API Express</strong>
-    `POST /api/chat`, valida mensaje, selecciona comercio y coordina el flujo.
-  </div>
-  <div class="arrow">→</div>
-  <div class="box">
-    <strong>Intent Router</strong>
-    Regex + keywords. Si hay baja confianza, usa LLM para clasificar.
-  </div>
-  <div class="arrow">→</div>
-  <div class="box">
-    <strong>Analytics Engine</strong>
-    Calcula ventas, tendencias, clientes, ticket, productos y alertas desde JSON.
+<div class="section-card">
+  <div class="diagram">
+    <div class="box"><strong>Usuario</strong>Pregunta en lenguaje natural: "¿Cuánto vendí esta semana?"</div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>Frontend</strong>Envía <code>{ message, mode, merchantId }</code> a la API.</div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>Chat Route</strong>Valida, detecta intent, ejecuta motor y arma respuesta.</div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>Respuesta</strong>Devuelve answer, intent, métricas, follow-ups y visualización.</div>
   </div>
 </div>
 
-<div class="diagram">
-  <div class="box">
-    <strong>Dataset JSON</strong>
-    3 comercios, 15,042 transacciones totales; prototipo fuerza `m001`.
-  </div>
-  <div class="arrow">→</div>
-  <div class="box">
-    <strong>Resultado exacto</strong>
-    `{ value, label, metricsUsed, visualization }`.
-  </div>
-  <div class="arrow">→</div>
-  <div class="box">
-    <strong>LLM Adapter</strong>
-    Reformula el label calculado; no recibe el dataset completo.
-  </div>
-  <div class="arrow">→</div>
-  <div class="box">
-    <strong>Respuesta final</strong>
-    Texto claro, follow-ups y visualización si aplica.
+<div class="section-card">
+  <div class="diagram">
+    <div class="box"><strong>Dataset JSON</strong>3 comercios y 15,042 transacciones totales; demo fuerza <code>m001</code>.</div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>Data Loader</strong>Normaliza formato, filtra completadas y entrega Tienda Don Pepe.</div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>Analytics Engine</strong>Produce <code>{ value, label, metricsUsed, visualization }</code>.</div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>LLM Adapter</strong>Solo reformula el label calculado o clasifica si las reglas no bastan.</div>
   </div>
 </div>
 
-## 4. Flujo de una consulta
+## 4. Mapa de Módulos del Backend
+
+<div class="module-grid">
+  <div class="module"><strong>index.ts</strong>Inicializa Express, CORS, JSON parser, dataset y proveedor LLM.</div>
+  <div class="module"><strong>chat.routes.ts</strong>Endpoint principal. Orquesta intent, cálculo, LLM, follow-ups y visualización.</div>
+  <div class="module"><strong>analytics.engine.ts</strong>Funciones determinísticas para ventas, clientes, tendencia, ticket y productos.</div>
+  <div class="module"><strong>data-loader.ts</strong>Carga JSON desde `src` o desde build `dist`; fuerza m001 para demo.</div>
+  <div class="module"><strong>intent-catalog.ts</strong>Catálogo de 19 intents con keywords, regex, descripción y follow-ups.</div>
+  <div class="module"><strong>intent-router.ts</strong>Detecta intent y extrae fechas/años con tolerancia a errores.</div>
+  <div class="module"><strong>date-utils.ts</strong>Fecha real de Ecuador, formato local y etiquetas de fecha.</div>
+  <div class="module"><strong>llm/*</strong>OpenAIProvider, NoopProvider, LLMCache y adaptador común.</div>
+</div>
+
+## 5. Flujo de una Consulta
 
 <div class="flow">
-  <div class="box"><strong>1. Usuario</strong>Pregunta: "¿Cuál es mi ticket promedio?"</div>
-  <div class="box"><strong>2. Frontend</strong>Envía `{ message, mode, merchantId }`.</div>
-  <div class="box"><strong>3. Intent</strong>Detecta `average_ticket`.</div>
-  <div class="box"><strong>4. Cálculo</strong>Suma transacciones y divide por conteo.</div>
-  <div class="box"><strong>5. LLM</strong>Reformula el resultado en lenguaje natural.</div>
-  <div class="box"><strong>6. UI</strong>Muestra respuesta y sugerencias.</div>
+  <div class="box"><strong>1. Input</strong>El usuario pregunta: "¿Cuánto vendí ayer?"</div>
+  <div class="box"><strong>2. Intent</strong>Regex/keywords detectan <code>sales_specific_date</code>.</div>
+  <div class="box"><strong>3. Fecha</strong><code>extractDateFromMessage</code> convierte "ayer" a fecha real -1 día.</div>
+  <div class="box"><strong>4. Métrica</strong><code>getSalesForDate</code> filtra transacciones completadas.</div>
+  <div class="box"><strong>5. Lenguaje</strong>LLM reformula el label calculado según Simple/Pro.</div>
+  <div class="box"><strong>6. UI</strong>Angular muestra respuesta, follow-ups y gráfico si aplica.</div>
 </div>
 
-El endpoint principal es `POST /api/chat`. La respuesta devuelve:
+El endpoint principal es <code>POST /api/chat</code>. Su respuesta incluye:
 
 | Campo | Descripción |
 |---|---|
-| `answer` | Respuesta final para el usuario. |
+| `answer` | Respuesta final que ve el usuario. |
 | `mode` | `simple` o `complete`. |
 | `detectedIntent` | Intent clasificado por reglas o LLM. |
-| `confidence` | Confianza del clasificador. |
+| `confidence` | Confianza de clasificación. |
 | `metricsUsed` | Métricas determinísticas usadas. |
-| `suggestedFollowUps` | Preguntas sugeridas para continuar. |
+| `suggestedFollowUps` | Preguntas sugeridas. |
 | `visualization` | `bar`, `line`, `pie`, `table` o `null`. |
 
-## 5. Dataset y conexión a datos
+## 6. Fechas Relativas y Zona Horaria
 
-El archivo `server/src/data/data-loader.ts` carga `transactions.json`, normaliza el formato y filtra transacciones completadas. Para esta demo, aunque el JSON contiene tres comercios, el backend fuerza `m001` para garantizar una presentación estable sobre Tienda Don Pepe.
+Antes, la lógica podía confundirse si "hoy" se trataba como una fecha fija o como la última fecha del dataset. Ahora está centralizada:
+
+<div class="diagram">
+  <div class="box"><strong>getCurrentEcuadorDate()</strong>Obtiene fecha/hora real en <code>America/Guayaquil</code>.</div>
+  <div class="arrow">→</div>
+  <div class="box"><strong>chat.routes.ts</strong>Pasa la referencia real al parser de fechas.</div>
+  <div class="arrow">→</div>
+  <div class="box"><strong>intent-router.ts</strong>Resuelve "hoy", "ayer", "aller" y "anteayer".</div>
+  <div class="arrow">→</div>
+  <div class="box"><strong>analytics.engine.ts</strong>Calcula día, semana, mes, tendencia y churn con esa referencia.</div>
+</div>
+
+| Expresión | Manejo actual |
+|---|---|
+| `hoy`, `día de hoy`, `día actual` | Se convierte a la fecha real de Ecuador del momento de consulta. |
+| `ayer`, `aller` | Se interpreta como fecha real de Ecuador menos un día. |
+| `anteayer`, `ante ayer` | Se interpreta como fecha real de Ecuador menos dos días. |
+| `esta semana` | Rango lunes-domingo de la semana actual. |
+| `este mes` | Mes calendario de la fecha real. |
+| Fechas explícitas | Se respetan, por ejemplo `2025`, `17 de abril`, `2025-04-17`. |
+
+<div class="ok">
+Esto quedó validado en el set de pruebas: "¿Cuánto he vendido el día de hoy?", "¿Cuánto vendí ayer?", "caunto bendi aller" y "¿Cuánto vendí esta semana?" pasan contra el endpoint real.
+</div>
+
+## 7. Dataset y Conexión a Datos
+
+El archivo <code>server/src/data/transactions.json</code> contiene 3 comercios. El prototipo fuerza <code>m001</code> para que la demo sea estable y todas las pruebas correspondan a Tienda Don Pepe.
 
 | Comercio | Categoría | Transacciones totales | Completadas | Ventas completadas | Rango |
 |---|---:|---:|---:|---:|---|
@@ -213,34 +337,36 @@ El archivo `server/src/data/data-loader.ts` carga `transactions.json`, normaliza
 | Café Internet Mary (`m002`) | servicios | 4,777 | 4,548 | $56,277.58 | 2024-01-01 a 2026-04-19 |
 | Restaurante Doña Lupita (`m003`) | restaurante | 7,303 | 6,921 | $157,519.90 | 2024-01-01 a 2026-04-19 |
 
-<table class="decision">
-  <tr><td>Conexión actual</td><td>Lectura local en memoria con `readFileSync`, suficiente para prototipo y demo rápida.</td></tr>
-  <tr><td>Ruta de migración</td><td>Reemplazar solo `data-loader.ts` por llamadas a APIs internas de DeUna, conservando intents y motor analítico.</td></tr>
-  <tr><td>Privacidad</td><td>El dataset completo no se envía al LLM. Solo se envían labels calculados, como "Vendiste $1,332.61 en 30 ventas".</td></tr>
+<table class="mini-table">
+  <tr><td>Carga actual</td><td>`data-loader.ts` lee JSON en memoria y normaliza si viene como array, objeto con `merchants` o un solo comercio.</td></tr>
+  <tr><td>Compatibilidad build</td><td>Ahora busca `transactions.json` junto al build y también en `src/data`, evitando fallos al correr desde `dist`.</td></tr>
+  <tr><td>Demo controlada</td><td>`getMerchantData` y `getAllMerchants` filtran a `m001`; el selector visual no implica multi-comercio activo en backend.</td></tr>
+  <tr><td>Migración futura</td><td>Se puede reemplazar solo `data-loader.ts` por APIs reales de DeUna manteniendo intents y motor analítico.</td></tr>
+  <tr><td>Privacidad</td><td>El dataset completo no viaja al LLM. Solo se envían labels calculados y métricas usadas.</td></tr>
 </table>
 
-## 6. Motor analítico determinístico
+## 8. Motor Analítico Determinístico
 
-El motor en `server/src/analytics/analytics.engine.ts` contiene funciones puras que filtran, agrupan y calculan métricas. Esto evita que el LLM haga aritmética y garantiza consistencia de números.
+El motor en <code>analytics.engine.ts</code> evita que el LLM haga aritmética. Cada función filtra transacciones completadas y devuelve un objeto uniforme.
 
 | Función | Qué calcula | Visualización |
 |---|---|---|
-| `getSalesToday` / `getSalesForDate` | Ventas de hoy o fecha específica, total y conteo. | Barra por hora |
+| `getSalesToday` / `getSalesForDate` | Total y conteo de ventas por día. | Barra por hora |
 | `getSalesForPeriod` | Ventas de semana o mes actual. | Barra por día |
-| `getSalesForYear` | Total anual y cantidad de transacciones. | Línea mensual |
-| `comparePeriods` | Mes actual vs mes anterior, diferencia y variación. | Barra comparativa |
+| `getSalesForYear` | Total anual y transacciones por año. | Línea mensual |
+| `comparePeriods` | Mes actual vs anterior, diferencia y variación. | Barra comparativa |
 | `getBestDay` / `getWorstDay` | Días extremos del historial. | Sin gráfica |
-| `getAverageTicket` | Ticket promedio por venta. | Sin gráfica |
-| `getChurnRisk` | Clientes frecuentes sin compras en 30+ días. | Tabla si hay riesgo |
+| `getAverageTicket` | Promedio por transacción. | Sin gráfica |
+| `getChurnRisk` | Clientes frecuentes sin compras recientes. | Tabla si hay riesgo |
 | `getRepeatCustomers` | Clientes por frecuencia y total gastado. | Tabla |
-| `getDayOfWeekAnalysis` | Promedio por día de la semana. | Barra |
-| `getSalesTrend` / `detectSignificantChange` | Tendencia de últimos 14 días y variación. | Línea |
+| `getDayOfWeekAnalysis` | Promedio por día de semana. | Barra |
+| `getSalesTrend` / `detectSignificantChange` | Últimos 14 días y cambio porcentual. | Línea |
 | `getTopProducts` | Categorías líderes por ventas. | Pastel/progreso |
-| `getPaymentBreakdown` | Distribución por método de pago. | Pastel/progreso |
+| `getPaymentBreakdown` | Total por método de pago. | Pastel/progreso |
 
-## 7. Intents soportados
+## 9. Intents Soportados
 
-El catálogo actual tiene 19 intents, superando el mínimo del reto. Cubre consultas de ventas, fechas, comparación, clientes, productos, pago, ayuda y saludos.
+El catálogo actual contiene 19 intents. Se cubre más que el mínimo del reto y se separan preguntas de negocio de barreras conversacionales.
 
 | Grupo | Intents |
 |---|---|
@@ -250,60 +376,69 @@ El catálogo actual tiene 19 intents, superando el mínimo del reto. Cubre consu
 | Producto y pago | `top_products`, `payment_methods`, `average_ticket` |
 | Asistencia | `proactive_alert`, `greeting`, `help` |
 
-El router aplica tres niveles: primero patrones regex con confianza alta, luego keywords ponderadas y, si la confianza es baja, clasificación por LLM cuando está disponible.
+<div class="note">
+El intent `sales_today` se reforzó para frases como "ventas del día de hoy", "cuánto he vendido en el día de hoy" y "hoy cuánto he vendido". Esto evita depender de una sola frase exacta.
+</div>
 
-## 8. Modelo LLM y prompts
+## 10. LLM, Prompts y Barreras
 
-El proveedor principal es `OpenAIProvider` con modelo configurable por `LLM_MODEL`; por defecto usa `gpt-4o-mini`. El adaptador tiene tres responsabilidades:
+El proveedor principal es <code>OpenAIProvider</code>, con modelo configurable por <code>LLM_MODEL</code> y valor por defecto <code>gpt-4o-mini</code>. El backend usa OpenAI solo si <code>LLM_PROVIDER=openai</code> y existe <code>OPENAI_API_KEY</code>; si no, usa <code>NoopProvider</code>.
 
-| Uso del LLM | Prompt / regla clave | Por qué aporta valor |
+| Uso del LLM | Prompt / regla | Valor técnico |
 |---|---|---|
-| Reformulación | "Eres un asistente financiero amigable para microcomerciantes en Ecuador"; no inventar datos; segunda persona; breve en Simple; más contexto en complete; sin jerga financiera. | Convierte números en lenguaje entendible para el comerciante. |
-| Clasificación fallback | Responder solo el nombre del intent; tolerar errores ortográficos; priorizar hoy, fechas específicas, días de semana, semana y mes. | Captura lenguaje informal como "caunto bendi aller". |
-| Consulta general | Acepta saludos y cálculos útiles de ventas; rechaza preguntas fuera del negocio. | Mantiene foco del producto y reduce respuestas irrelevantes. |
+| Reformulación | No inventar datos, hablar en segunda persona, tono amigable, Simple breve y Pro con contexto. | Convierte métricas en lenguaje claro para microcomerciantes. |
+| Clasificación fallback | Responder solo el nombre del intent, tolerar errores ortográficos, distinguir fechas y periodos. | Ayuda en inputs informales o ambiguos. |
+| Consulta general | Acepta saludos y cálculos de caja; rechaza temas fuera del negocio. | Mantiene foco y evita que el producto se vuelva asistente general. |
+| Fallback sin IA | `NoopProvider` responde con labels directos y sugerencias. | La demo no se rompe si no hay API key. |
 
-El sistema también incluye `NoopProvider`: si no hay API key o se desactiva OpenAI, la app sigue funcionando con labels calculados por backend.
+<div class="section-card">
+  <strong>Por qué se rechazan preguntas fuera de dominio</strong>
+  <p>Aunque un LLM conectado a OpenAI pueda saber quién juega o quién ganó un partido, ese no es el objetivo del chatbot. La barrera de dominio protege la experiencia: el asistente debe concentrarse en ventas, clientes, caja, productos y salud del negocio.</p>
+</div>
 
-## 9. Modos Simple y Pro
+## 11. Modos Simple y Pro
 
 | Modo | Comportamiento | Caso de uso |
 |---|---|---|
-| Simple (`simple`) | Respuesta corta de 1-2 frases. Muestra visualizaciones para consultas clave como hoy, fecha, semana, mes o tendencia. | Comerciante que quiere una respuesta rápida mientras atiende. |
-| Pro (`complete`) | Respuesta con contexto adicional, recomendación y visualización siempre que el intent la soporte. | Evaluación, análisis y toma de decisiones con más detalle. |
+| Simple (`simple`) | Respuesta breve de 1-2 frases, con baja carga cognitiva. | Comerciante atendiendo, necesita el dato rápido. |
+| Pro (`complete`) | Más contexto, recomendación y visualización si aplica. | Demo, análisis, revisión de tendencia y toma de decisiones. |
 
-La interfaz muestra un toggle "PRO". El backend recibe el modo y lo pasa al LLM para controlar extensión y tono.
+La interfaz envía el modo al backend. El LLM lo usa para ajustar extensión y profundidad, pero los números siguen saliendo del motor determinístico.
 
-## 10. Visualizaciones
+## 12. Visualizaciones
 
-Las visualizaciones se generan en el backend como datos estructurados y se renderizan en Angular:
+Las visualizaciones son datos estructurados generados por backend y renderizados en Angular. No son obligatorias para todo: aparecen cuando aclaran el resultado.
 
-| Tipo | Uso | Ejemplo |
+| Tipo | Uso | Ejemplo de pregunta |
 |---|---|---|
-| `bar` | Ventas por día, semana, mes o promedio por día. | "¿Cuánto vendí esta semana?" |
-| `line` | Tendencias o ventas anuales. | "¿Cómo va la tendencia?" |
-| `table` | Clientes frecuentes o clientes en riesgo. | "¿Quiénes me compran más?" |
-| `pie` | Categorías o métodos de pago. | "¿Qué es lo que más vendo?" |
+| `bar` | Ventas por hora/día, semana, mes o días fuertes. | "¿Cuánto vendí esta semana?" |
+| `line` | Tendencia reciente o ventas anuales. | "¿Cuál es la tendencia?" |
+| `table` | Clientes frecuentes o en riesgo. | "¿Quiénes me compran más?" |
+| `pie` | Categorías o métodos de pago. | "¿Qué categorías se venden más?" |
 
-Esto evita dashboards complejos: el gráfico aparece solo cuando ayuda a entender el resultado.
+<div class="ok">
+Para evitar cortes feos en este PDF, las cajas, diagramas, tablas y tarjetas usan <code>break-inside: avoid</code> y <code>page-break-inside: avoid</code>. Además, las secciones largas se separan con saltos controlados.
+</div>
 
-## 11. Manejo de errores y casos borde
+## 13. Manejo de Errores y Casos Borde
 
 | Caso | Manejo implementado |
 |---|---|
 | Mensaje vacío | `POST /api/chat` responde 400 con "El mensaje no puede estar vacío". |
 | Intent desconocido | Si hay LLM, responde dentro del dominio; si no, sugiere preguntas válidas. |
-| Fecha relativa | `ayer` y `aller` se resuelven con `extractDateFromMessage`. |
-| Fecha no parseada | En `sales_specific_date`, si no puede extraer fecha, usa ventas del mes como fallback. |
-| Sin datos para una fecha | Devuelve "No se encontraron ventas..." y no inventa gráfico. |
-| Clientes sin churn | Responde que todos los clientes frecuentes compraron recientemente. |
-| Error de OpenAI | Se captura el error y se devuelve el label determinístico original. |
-| Sin API key | Usa `NoopProvider`, manteniendo funcionalidad básica. |
-| Pregunta fuera de dominio | Rechazo cordial: el asistente se limita a ventas y salud del negocio. |
-| Error interno | Respuesta HTTP 500 con "Error procesando tu pregunta". |
+| Pregunta fuera de dominio | Rechazo cordial y foco en ventas/salud del negocio. |
+| Fecha relativa | `hoy`, `ayer`, `aller`, `anteayer` se resuelven con fecha real de Ecuador. |
+| Fecha no parseada | En `sales_specific_date`, fallback a ventas del mes. |
+| Fecha sin ventas | Responde que no hay ventas y no inventa gráfico. |
+| Clientes sin churn | Responde que no hay clientes en riesgo. |
+| Error OpenAI | Captura error y devuelve label determinístico original. |
+| Sin API key | Usa `NoopProvider` con respuestas directas. |
+| Dataset no encontrado en build | `data-loader.ts` prueba rutas candidatas antes de fallar. |
+| Error interno | HTTP 500 con "Error procesando tu pregunta". |
 
-## 12. Alertas proactivas
+## 14. Alertas Proactivas
 
-El módulo `server/src/alerts/proactive-alerts.ts` genera insights sin que el usuario pregunte. Evalúa:
+El módulo <code>server/src/alerts/proactive-alerts.ts</code> genera insights sin que el usuario pregunte.
 
 | Alerta | Regla |
 |---|---|
@@ -313,49 +448,57 @@ El módulo `server/src/alerts/proactive-alerts.ts` genera insights sin que el us
 | Clientes en riesgo | Cliente frecuente sin compra en más de 30 días. |
 | Día fuerte/flojo | Sugiere promociones en el día con menor promedio. |
 
-En la corrida actual de Tienda Don Pepe, el consejo proactivo destaca una subida reciente de 20.4%, martes como día fuerte y domingo como día flojo.
+En la corrida de Tienda Don Pepe, el consejo proactivo identifica subida reciente de 20.4%, martes como día fuerte y domingo como día flojo.
 
-## 13. Seguridad, costos y desempeño
-
-<table class="decision">
-  <tr><td>Precisión</td><td>Los cálculos no dependen del LLM. La IA solo reformula, por lo que no puede alterar la fuente de datos si el backend ya calculó el número.</td></tr>
-  <tr><td>Costo</td><td>`LLMCache` guarda intents y reformulaciones por label, modo y comercio. Preguntas repetidas evitan llamadas innecesarias.</td></tr>
-  <tr><td>Privacidad</td><td>El JSON completo permanece en servidor; al LLM solo viajan resultados resumidos.</td></tr>
-  <tr><td>Latencia</td><td>Regex/keywords y lectura en memoria son rápidos. El LLM se usa como capa de lenguaje, no como motor analítico.</td></tr>
-  <tr><td>Escalabilidad</td><td>La API es stateless salvo caché en memoria; puede migrar a contenedor y conectarse a APIs reales de DeUna.</td></tr>
-</table>
-
-## 14. Endpoints
+## 15. Endpoints
 
 | Método | Ruta | Descripción |
 |---|---|---|
 | `POST` | `/api/chat` | Procesa una pregunta y devuelve respuesta, intent, métricas, follow-ups y visualización. |
-| `GET` | `/api/proactive-alert` | Devuelve la alerta proactiva principal del comercio. |
-| `GET` | `/api/sample-questions` | Lista preguntas sugeridas para guiar al usuario. |
-| `GET` | `/api/merchants` | Devuelve comercios disponibles; en demo se filtra a `m001`. |
+| `GET` | `/api/proactive-alert` | Devuelve la alerta proactiva principal. |
+| `GET` | `/api/sample-questions` | Lista preguntas sugeridas. |
+| `GET` | `/api/merchants` | Devuelve comercios disponibles; en demo solo `m001`. |
 | `GET` | `/api/health` | Verifica estado del backend. |
 
-## 15. Validación del prototipo
+## 16. Pruebas y Validación
 
-La validación funcional está documentada en `Set_Pruebas_15_Preguntas_4NOVA_DeUna.pdf` y se ejecuta con `node run_tests.js`.
+La validación se ejecuta con <code>node run_tests.js</code>. El runner ahora calcula expectativas dinámicas desde el dataset y la fecha real de Ecuador. Los resultados quedan en <code>test_results.json</code> y alimentan el PDF de pruebas.
 
-| Grupo | Resultado |
+| Grupo | Resultado de la última corrida |
 |---|---|
 | 15 preguntas principales de negocio | 15 / 15 correctas |
 | Anexos de barreras y modos | 7 / 7 correctas |
 | Acierto principal | 100% |
-| Requisito mínimo | 80% |
+| Acierto anexos | 100% |
+| Requisito mínimo del reto | 80% |
 
-## 16. Limitaciones actuales y siguientes pasos
+<div class="section-card">
+  <strong>Relación con el PDF de pruebas</strong>
+  <p><code>Set_Pruebas_15_Preguntas_4NOVA_DeUna.pdf</code> documenta input, modo, esperado, output real, relevancia, observaciones y código de evidencia. Esta documentación técnica explica cómo la arquitectura produce esos resultados.</p>
+</div>
 
-| Limitación | Siguiente paso recomendado |
+## 17. Seguridad, Costos y Desempeño
+
+<table class="mini-table">
+  <tr><td>Precisión</td><td>Los cálculos no dependen del LLM. El backend calcula y el LLM reformula.</td></tr>
+  <tr><td>Privacidad</td><td>El dataset completo permanece en servidor; solo se envían resultados resumidos al LLM.</td></tr>
+  <tr><td>Costo</td><td>`LLMCache` evita llamadas repetidas para intents y reformulaciones ya vistas.</td></tr>
+  <tr><td>Latencia</td><td>Regex/keywords y JSON en memoria son rápidos; el LLM es una capa de lenguaje.</td></tr>
+  <tr><td>Escalabilidad</td><td>Puede migrar a API real de DeUna reemplazando `data-loader.ts`.</td></tr>
+  <tr><td>Operación sin LLM</td><td>`NoopProvider` mantiene el prototipo utilizable con respuestas directas.</td></tr>
+</table>
+
+## 18. Limitaciones y Próximos Pasos
+
+| Limitación actual | Siguiente paso recomendado |
 |---|---|
-| El backend fuerza `m001` aunque el JSON tiene 3 comercios. | Habilitar selección real por `merchantId` en `data-loader.ts`. |
-| Dataset estático local. | Reemplazar por API transaccional DeUna manteniendo el contrato de `Transaction`. |
-| Caché en memoria no persiste entre reinicios. | Usar Redis o caché distribuida si escala a producción. |
-| Métricas limitadas al dataset disponible. | Agregar costos, margen, inventario y comparaciones por canal cuando existan datos reales. |
-| Visualizaciones CSS simples. | Mantenerlas simples para microcomercio, o migrar a una librería ligera si se requiere interacción avanzada. |
+| Backend fuerza `m001`. | Habilitar selección real por `merchantId` cuando se conecte a datos reales. |
+| Dataset local estático. | Reemplazar JSON por API transaccional DeUna manteniendo contrato `Transaction`. |
+| Caché en memoria. | Migrar a Redis si se despliega en múltiples instancias. |
+| Métricas dependen de campos disponibles. | Agregar margen, costo, inventario y canal cuando existan en fuente real. |
+| Visualizaciones simples. | Mantener simplicidad para microcomercio o migrar a librería ligera si se requiere interacción avanzada. |
+| Sin autenticación productiva. | Agregar auth, control de comercio por usuario y permisos antes de producción. |
 
-## 17. Conclusión técnica
+## 19. Conclusión Técnica
 
-La solución cumple el reto porque combina datos exactos con lenguaje natural accesible. La arquitectura separa responsabilidades: el backend calcula, el LLM explica y la interfaz muestra. Esta separación hace que el sistema sea confiable para decisiones de negocio, fácil de demostrar y viable de migrar a una integración real con DeUna.
+La solución cumple el reto porque combina datos exactos, lenguaje accesible y visualizaciones simples. La arquitectura evita que el LLM invente números: el backend calcula, el LLM explica y la interfaz muestra. La actualización de fechas dinámicas deja el prototipo listo para operar con expresiones naturales como "hoy" y "ayer" sin depender de una fecha fija.
