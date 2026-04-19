@@ -4,14 +4,22 @@
 
 import { Router, type Request, type Response } from 'express';
 import * as analytics from '../analytics/analytics.engine.js';
-import { detectIntent, getIntentDef, getSampleQuestions } from '../intents/intent-router.js';
+import { detectIntent, getIntentDef, getSampleQuestions, extractDateFromMessage } from '../intents/intent-router.js';
 import { generateProactiveAlerts, getTopAlert } from '../alerts/proactive-alerts.js';
-import { getAllMerchants, getMerchantData } from '../data/data-loader.js';
+import { getAllMerchants, getMerchantData, getCompletedTransactions } from '../data/data-loader.js';
 import { getLLMProvider } from '../llm/llm-adapter.js';
 import { LLMCache } from '../llm/llm-cache.js';
 import type { ChatRequest, ChatResponse, AnalyticsResult } from '../types/index.js';
 
 export const chatRouter = Router();
+
+// ─── Utilidad: obtener fecha de referencia del dataset ──
+function getRefDate(merchantId?: string): Date {
+    const txns = getCompletedTransactions(merchantId);
+    if (txns.length === 0) return new Date();
+    const dates = txns.map(t => new Date(t.date).getTime());
+    return new Date(Math.max(...dates));
+}
 
 // ─── POST /api/chat ────────────────────────────────────
 chatRouter.post('/chat', async (req: Request, res: Response): Promise<void> => {
@@ -55,6 +63,20 @@ chatRouter.post('/chat', async (req: Request, res: Response): Promise<void> => {
 
         // Ejecutar la función analítica correspondiente
         switch (intentMatch.intent) {
+            case 'sales_today':
+                result = analytics.getSalesToday(merchantId);
+                break;
+            case 'sales_specific_date': {
+                const refDate = getRefDate(merchantId);
+                const dateStr = extractDateFromMessage(message, refDate);
+                if (dateStr) {
+                    result = analytics.getSalesForDate(dateStr, merchantId);
+                } else {
+                    // Fallback: si no pudo parsear la fecha, usar ventas del mes
+                    result = analytics.getSalesForPeriod('month', merchantId);
+                }
+                break;
+            }
             case 'sales_this_week':
                 result = analytics.getSalesForPeriod('week', merchantId);
                 break;
@@ -139,7 +161,12 @@ chatRouter.post('/chat', async (req: Request, res: Response): Promise<void> => {
         }
 
         // En modo simple, no mostrar visualización a menos que se pida explícitamente
-        const showViz = mode === 'complete' || intentMatch.intent.includes('trend');
+        const showViz = mode === 'complete'
+            || intentMatch.intent.includes('trend')
+            || intentMatch.intent === 'sales_today'
+            || intentMatch.intent === 'sales_specific_date'
+            || intentMatch.intent === 'sales_this_week'
+            || intentMatch.intent === 'sales_this_month';
 
         const response: ChatResponse = {
             answer,

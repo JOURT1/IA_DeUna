@@ -16,6 +16,13 @@ function fmtDate(d: Date): string {
 function dayName(dow: number): string {
     return ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][dow];
 }
+// Formatter de fecha LOCAL (evita desfase UTC de toISOString)
+function toLocalDateStr(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
 
 function getWeekRange(ref: Date): { start: Date; end: Date } {
     const d = new Date(ref);
@@ -67,7 +74,7 @@ export function getSalesForPeriod(period: 'week' | 'month', merchantId?: string)
     // Datos para gráfico: ventas por día
     const dailyMap = new Map<string, number>();
     filtered.forEach(t => {
-        const key = toDate(t.date).toISOString().split('T')[0];
+        const key = toLocalDateStr(toDate(t.date));
         dailyMap.set(key, (dailyMap.get(key) ?? 0) + t.amount);
     });
     const labels = [...dailyMap.keys()].sort();
@@ -85,6 +92,61 @@ export function getSalesForPeriod(period: 'week' | 'month', merchantId?: string)
         metricsUsed: ['total_ventas', 'num_transacciones'],
         visualization: viz
     };
+}
+
+export function getSalesForDate(dateStr: string, merchantId?: string): AnalyticsResult {
+    const txns = getCompletedTransactions(merchantId);
+    const targetDate = new Date(dateStr + 'T00:00:00');
+    const start = new Date(targetDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(targetDate);
+    end.setHours(23, 59, 59, 999);
+
+    const filtered = filterByRange(txns, start, end);
+    const total = sumAmounts(filtered);
+
+    // Desglose por hora para el gráfico
+    const hourlyMap = new Map<string, number>();
+    filtered.forEach(t => {
+        const hour = toDate(t.date).getHours();
+        const key = `${hour}:00`;
+        hourlyMap.set(key, (hourlyMap.get(key) ?? 0) + t.amount);
+    });
+    const labels = [...hourlyMap.keys()].sort((a, b) => parseInt(a) - parseInt(b));
+    const values = labels.map(l => +(hourlyMap.get(l)!.toFixed(2)));
+
+    const dateLabel = fmtDate(targetDate);
+
+    const viz: Visualization | null = filtered.length > 0 ? {
+        type: 'bar',
+        title: `Ventas del ${dateLabel}`,
+        data: { labels, values }
+    } : null;
+
+    return {
+        value: { total: +total.toFixed(2), count: filtered.length, date: dateStr },
+        label: filtered.length > 0
+            ? `El ${dateLabel} vendiste ${fmt(total)} en ${filtered.length} transacciones.`
+            : `No se encontraron ventas para el ${dateLabel}.`,
+        metricsUsed: ['total_ventas_dia', 'num_transacciones_dia'],
+        visualization: viz
+    };
+}
+
+export function getSalesToday(merchantId?: string): AnalyticsResult {
+    const ref = getRefDate(merchantId);
+    const dateStr = toLocalDateStr(ref);
+    const result = getSalesForDate(dateStr, merchantId);
+    // Ajustar etiqueta a "hoy"
+    if (result.value && (result.value as any).count > 0) {
+        result.label = `Hoy vendiste ${fmt((result.value as any).total)} en ${(result.value as any).count} transacciones.`;
+    } else {
+        result.label = 'Hoy no has tenido ventas registradas aún.';
+    }
+    if (result.visualization) {
+        result.visualization.title = 'Ventas de hoy (por hora)';
+    }
+    return result;
 }
 
 export function comparePeriods(merchantId?: string): AnalyticsResult {
@@ -124,7 +186,7 @@ export function getBestDay(merchantId?: string): AnalyticsResult {
     const txns = getCompletedTransactions(merchantId);
     const dailyMap = new Map<string, number>();
     txns.forEach(t => {
-        const key = toDate(t.date).toISOString().split('T')[0];
+        const key = toLocalDateStr(toDate(t.date));
         dailyMap.set(key, (dailyMap.get(key) ?? 0) + t.amount);
     });
 
@@ -143,7 +205,7 @@ export function getWorstDay(merchantId?: string): AnalyticsResult {
     const txns = getCompletedTransactions(merchantId);
     const dailyMap = new Map<string, number>();
     txns.forEach(t => {
-        const key = toDate(t.date).toISOString().split('T')[0];
+        const key = toLocalDateStr(toDate(t.date));
         dailyMap.set(key, (dailyMap.get(key) ?? 0) + t.amount);
     });
 
@@ -310,7 +372,7 @@ export function getSalesTrend(merchantId?: string): AnalyticsResult {
     const dailyMap = new Map<string, number>();
     const filtered = filterByRange(txns, start, ref);
     filtered.forEach(t => {
-        const key = toDate(t.date).toISOString().split('T')[0];
+        const key = toLocalDateStr(toDate(t.date));
         dailyMap.set(key, (dailyMap.get(key) ?? 0) + t.amount);
     });
 
@@ -318,7 +380,7 @@ export function getSalesTrend(merchantId?: string): AnalyticsResult {
     const labels: string[] = [];
     const values: number[] = [];
     for (let d = new Date(start); d <= ref; d.setDate(d.getDate() + 1)) {
-        const key = d.toISOString().split('T')[0];
+        const key = toLocalDateStr(d);
         labels.push(key);
         values.push(+(dailyMap.get(key) ?? 0).toFixed(2));
     }

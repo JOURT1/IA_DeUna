@@ -1,5 +1,5 @@
 ﻿/* ============================================
-   CHAT COMPONENT STYLES - DiseÃ±o DeUna Proporcionado
+   CHAT COMPONENT STYLES - Diseño DeUna Proporcionado
    ============================================ */
 
 :host {
@@ -348,15 +348,51 @@
   /* Ajuste optico del icono send */
 }
 
-/* --- Recording Bar --- */
-.recording-bar {
+/* --- WhatsApp Style Recording Bar --- */
+.recording-bar.whatsapp-style {
   display: flex;
   align-items: center;
-  background: #FEF2F2;
-  border: 1.5px solid #EF4444;
+  background: white;
   border-radius: 30px;
-  padding: 6px 6px 6px 16px;
+  padding: 6px 6px 6px 12px;
   gap: 12px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  animation: slideInBar 0.3s ease-out forwards;
+}
+
+@keyframes slideInBar {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cancel-record-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.cancel-record-btn:hover {
+  background: #FEF2F2;
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .recording-pulsing {
@@ -388,32 +424,72 @@
   font-size: 1rem;
 }
 
-.recording-text {
+.recording-text-container {
   flex: 1;
-  font-size: 0.9rem;
-  color: #EF4444;
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.stop-btn {
+.recording-text {
+  font-size: 0.9rem;
+  color: #4B5563;
+  white-space: nowrap;
+}
+
+.slide-text {
+  display: inline-block;
+  animation: slideText 1.5s infinite alternate ease-in-out;
+  opacity: 0.8;
+}
+
+@keyframes slideText {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(5px);
+    opacity: 0.5;
+  }
+}
+
+.send-record-btn {
   width: 36px;
   height: 36px;
   border-radius: 50%;
   border: none;
-  background: #EF4444;
+  background: #5B21B6;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.stop-square {
-  width: 12px;
-  height: 12px;
-  background: white;
-  border-radius: 2px;
+.pro-mode .send-record-btn {
+  background: #009788;
+}
+
+.pro-mode .recording-bar.whatsapp-style {
+  border-color: #99F6E4;
+  box-shadow: 0 4px 14px rgba(0, 151, 136, 0.15);
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+.send-record-btn svg {
+  transform: translateX(-1px);
 }
 
 /* --- System Alert / Proactive Alert --- */
@@ -485,106 +561,156 @@
   border-color: #5B21B6;
 }
 
-/* --- Visualizations (Cards) Simplificadas --- */
-.viz-card {
+/* --- Tarjetas de Resumen (Insights) --- */
+.insight-card {
   background: transparent;
   padding: 8px 0;
   margin-top: 4px;
 }
 
-.viz-card h4 {
-  margin: 0 0 10px 0;
+.insight-header {
+  border-bottom: 1px solid #E5E7EB;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.insight-title {
+  margin: 0 0 4px 0;
   font-size: 0.75rem;
   color: #4B5563;
-  text-align: center;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Bar Chart Simplificado */
-.chart-bars {
+.insight-total {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.5px;
+}
+
+/* Trend Chart (Bar/Line) */
+.trend-chart {
   display: flex;
   align-items: flex-end;
-  gap: 4px;
-  height: 90px;
-  justify-content: space-around;
-  padding: 0 4px;
+  gap: 2px;
+  height: 100px;
+  padding: 0;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
-.bar-col {
+.trend-bar-group {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100%;
   justify-content: flex-end;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+  min-width: 0;
 }
 
-.bar-fill {
+.trend-bar-group.is-max {
+  opacity: 1;
+}
+
+.trend-bar-fill {
   width: 100%;
-  max-width: 24px;
-  background: #8B5CF6;
+  background: #C4B5FD;
   border-radius: 4px 4px 0 0;
   position: relative;
   transition: height 0.5s ease;
 }
 
-.bar-val {
+.trend-bar-group.is-max .trend-bar-fill {
+  background: #8B5CF6;
+}
+
+.trend-peak-label {
   position: absolute;
-  top: -14px;
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.55rem;
+  font-size: 0.6rem;
   color: #4B5563;
+  font-weight: 700;
+  background: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.trend-label {
+  font-size: 0.55rem;
+  color: #6B7280;
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.insight-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.65rem;
+  color: #065F46;
+  background: #D1FAE5;
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+.insight-footer strong {
   font-weight: 700;
 }
 
-.bar-lbl {
-  font-size: 0.5rem;
-  color: #6B7280;
-  margin-top: 4px;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-/* Pie Chart */
-.chart-pie {
+/* Category Chart (Pie Replacement) */
+.category-chart {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
-.pie-row {
+.category-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-  border-bottom: 1px solid #E5E7EB;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.pie-row:last-child {
-  border-bottom: none;
+.category-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
 }
 
-.pie-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.pie-lbl {
-  flex: 1;
-  font-size: 0.8rem;
-  color: #374151;
-  text-transform: capitalize;
-}
-
-.pie-val {
-  font-size: 0.85rem;
+.category-name {
+  color: #4B5563;
   font-weight: 600;
+}
+
+.category-val {
   color: #111827;
+  font-weight: 700;
+}
+
+.category-track {
+  width: 100%;
+  height: 6px;
+  background: #E5E7EB;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.category-fill {
+  height: 100%;
+  background: #8B5CF6;
+  border-radius: 3px;
+  transition: width 0.5s ease;
 }
 
 /* Table Scroll */
@@ -724,46 +850,29 @@ td {
   box-shadow: 0 0 0 3px rgba(0, 151, 136, 0.15);
 }
 
-.pro-mode .input-pill input {
-  color: #111827;
-}
-
 .pro-mode .mic-btn {
-  background: #E0F2FE;
-  /* menta bajisimo */
-  color: #5B21B6;
-  /* logo morado */
-}
-
-.pro-mode .mic-btn:hover {
-  background: #BAE6FD;
+  background: #F0FDFA;
+  color: #009788;
 }
 
 .pro-mode .send-btn.active {
   background: #009788;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 151, 136, 0.4);
-}
-
-.pro-mode .send-btn.active:hover {
-  background: #00796B;
-  box-shadow: 0 4px 14px rgba(0, 151, 136, 0.5);
-}
-
-.pro-mode .recording-bar {
-  border-color: #009788;
-  background: #F0FDFA;
-}
-
-.pro-mode .recording-pulsing {
-  background: #009788;
-}
-
-.pro-mode .timer,
-.pro-mode .recording-text {
-  color: #009788;
 }
 
 .pro-mode .stop-btn {
   background: #009788;
+}
+
+.pro-mode .trend-bar-fill {
+  background: #99F6E4;
+}
+
+.pro-mode .trend-bar-group.is-max .trend-bar-fill,
+.pro-mode .category-fill {
+  background: #009788;
+}
+
+.pro-mode .insight-footer {
+  color: #5B21B6;
+  background: #F5F3FF;
 }

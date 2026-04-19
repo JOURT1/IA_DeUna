@@ -5,6 +5,61 @@
 import { INTENT_CATALOG, type IntentDef } from './intent-catalog.js';
 import type { IntentMatch } from '../types/index.js';
 
+const MONTH_MAP: Record<string, number> = {
+    'enero': 0, 'febrero': 1, 'marzo': 2, 'abril': 3, 'mayo': 4, 'junio': 5,
+    'julio': 6, 'agosto': 7, 'septiembre': 8, 'octubre': 9, 'noviembre': 10, 'diciembre': 11
+};
+
+/**
+ * Extrae una fecha del mensaje del usuario.
+ * Soporta: "17 de abril", "el 15", "ayer"
+ * Devuelve formato YYYY-MM-DD o null.
+ */
+export function extractDateFromMessage(message: string, refDate: Date): string | null {
+    const normalized = message.toLowerCase().trim();
+
+    // Formato ISO: "2025-04-17"
+    const isoMatch = normalized.match(/(\d{4})-(\d{2})-(\d{2})/);
+    if (isoMatch) {
+        return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+    }
+
+    // "ayer"
+    if (/\bayer\b/.test(normalized)) {
+        const yesterday = new Date(refDate);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const y = yesterday.getFullYear();
+        const m = String(yesterday.getMonth() + 1).padStart(2, '0');
+        const d = String(yesterday.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    // "17 de abril" o "17 de abril de 2025"
+    const fullDateMatch = normalized.match(/(\d{1,2})\s+de\s+(\w+)(?:\s+de\s+(\d{4}))?/);
+    if (fullDateMatch) {
+        const day = parseInt(fullDateMatch[1]);
+        const monthName = fullDateMatch[2];
+        const year = fullDateMatch[3] ? parseInt(fullDateMatch[3]) : refDate.getFullYear();
+        const month = MONTH_MAP[monthName];
+        if (month !== undefined && day >= 1 && day <= 31) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            return dateStr;
+        }
+    }
+
+    // "el 15" o "del 15" (solo día, asume mes actual del refDate)
+    const dayOnlyMatch = normalized.match(/(?:el|del)\s+(\d{1,2})(?:\s|$|[,.])/);
+    if (dayOnlyMatch) {
+        const day = parseInt(dayOnlyMatch[1]);
+        if (day >= 1 && day <= 31) {
+            const dateStr = `${refDate.getFullYear()}-${String(refDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            return dateStr;
+        }
+    }
+
+    return null;
+}
+
 export function detectIntent(message: string): IntentMatch {
     const normalized = message.toLowerCase().trim();
 
@@ -50,6 +105,7 @@ export function getIntentDef(intent: string): IntentDef | undefined {
 
 export function getSampleQuestions(): Array<{ question: string; intent: string }> {
     return [
+        { question: '¿Cuánto vendí hoy?', intent: 'sales_today' },
         { question: '¿Cuánto vendí esta semana?', intent: 'sales_this_week' },
         { question: '¿Cómo voy vs el mes pasado?', intent: 'sales_comparison' },
         { question: '¿Cuál fue mi mejor día?', intent: 'best_day' },
@@ -62,3 +118,4 @@ export function getSampleQuestions(): Array<{ question: string; intent: string }
         { question: 'Dame un consejo', intent: 'proactive_alert' },
     ];
 }
+

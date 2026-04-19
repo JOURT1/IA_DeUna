@@ -34,9 +34,10 @@ export function loadDataSet(): DataSet {
 
 export function getMerchantData(merchantId?: string): MerchantData {
     const ds = loadDataSet();
-    if (!merchantId) return ds.merchants[0];
-    const found = ds.merchants.find(m => m.merchant.merchantId === merchantId);
-    if (!found) throw new Error(`Comercio ${merchantId} no encontrado`);
+    // Forzado para prototipo: Siempre usar Tienda Don Pepe (m001)
+    const targetId = 'm001';
+    const found = ds.merchants.find(m => m.merchant.merchantId === targetId);
+    if (!found) throw new Error(`Comercio ${targetId} no encontrado`);
     return found;
 }
 
@@ -46,5 +47,8 @@ export function getCompletedTransactions(merchantId?: string): Transaction[] {
 }
 
 export function getAllMerchants() {
-    return loadDataSet().merchants.map(m => m.merchant);
+    // Retornar solo el comercio del prototipo
+    return loadDataSet().merchants
+        .filter(m => m.merchant.merchantId === 'm001')
+        .map(m => m.merchant);
 }

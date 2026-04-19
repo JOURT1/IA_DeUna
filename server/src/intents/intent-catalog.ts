@@ -14,6 +14,33 @@ export interface IntentDef {
 
 export const INTENT_CATALOG: IntentDef[] = [
     {
+        intent: 'sales_today',
+        keywords: ['hoy', 'vendí hoy', 'ventas hoy', 'ventas de hoy'],
+        patterns: [/cu[aá]nto\s+vend[ií]\s+hoy/i, /ventas?\s+(de\s+)?hoy/i, /hoy\s+cu[aá]nto/i, /hoy\s+vend[ií]/i],
+        description: 'Total de ventas del día de hoy',
+        analyticsFn: 'getSalesToday',
+        supportsVisualization: true,
+        followUps: ['¿Quieres ver las ventas de esta semana?', '¿Quieres comparar con ayer?']
+    },
+    {
+        intent: 'sales_specific_date',
+        keywords: ['vendí el', 'ventas del', 'de abril', 'de mayo', 'de junio', 'de julio', 'de agosto', 'de septiembre', 'de octubre', 'de noviembre', 'de diciembre', 'de enero', 'de febrero', 'de marzo', 'ayer', '2025-', '2024-'],
+        patterns: [
+            /\d{4}-\d{2}-\d{2}/i,
+            /cu[aá]nto\s+vend[ií]\s+(el\s+)?\d{1,2}\s+de\s+\w+/i,
+            /ventas?\s+(del?\s+)?\d{1,2}\s+de\s+\w+/i,
+            /cu[aá]nto\s+vend[ií]\s+ayer/i,
+            /ventas?\s+(de\s+)?ayer/i,
+            /el\s+\d{1,2}\s+de\s+\w+\s+cu[aá]nto/i,
+            /cu[aá]nto\s+vend[ií]\s+el\s+\d{1,2}/i,
+            /ventas?\s+del\s+\d{1,2}/i
+        ],
+        description: 'Ventas de una fecha específica (ej: "17 de abril", "ayer")',
+        analyticsFn: 'getSalesForDate',
+        supportsVisualization: true,
+        followUps: ['¿Quieres ver las ventas de esta semana?', '¿Quieres ver tu ticket promedio?']
+    },
+    {
         intent: 'sales_this_week',
         keywords: ['vendí esta semana', 'ventas semana', 'semana', 'semanal'],
         patterns: [/cu[aá]nto\s+vend[ií]\s+(esta\s+)?semana/i, /ventas?\s+(de\s+)?(esta\s+)?semana/i],

@@ -27,7 +27,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     merchants: Merchant[] = [];
     selectedMerchantId = '';
     sampleQuestions: SampleQuestion[] = [];
-    proactiveAlert: ProactiveInsight | null = null;
 
     recordingSeconds = 0;
     private timerInterval: any;
@@ -55,7 +54,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             if (merchants.length > 0) {
                 this.selectedMerchantId = merchants[0].merchantId;
             }
-            await this.loadProactiveAlert();
         } catch {
             console.error('Error cargando datos iniciales. ¿Está el backend corriendo?');
         }
@@ -81,7 +79,9 @@ export class ChatComponent implements OnInit, OnDestroy {
                 case 'end':
                     this.isListening = false;
                     this.stopTimer();
-                    // Quitamos el auto-send para que el usuario pueda ver el texto primero
+                    if (this.currentMessage.trim().length > 0) {
+                        this.sendMessage();
+                    }
                     break;
                 case 'error':
                     this.isListening = false;
@@ -95,23 +95,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.speechService.stop();
     }
 
-    async loadProactiveAlert(): Promise<void> {
-        try {
-            const res = await this.chatService.getProactiveAlert(this.selectedMerchantId);
-            this.proactiveAlert = res.alert;
-        } catch { /* silencioso */ }
-    }
-
-    async onMerchantChange(): Promise<void> {
-        this.messages = [];
-        const merchantName = this.merchants.find(m => m.merchantId === this.selectedMerchantId)?.merchantName ?? 'tu negocio';
-        this.messages.push({
-            text: `Cambiaste a ${merchantName}. ¿Qué quieres saber?`,
-            sender: 'bot',
-            timestamp: new Date()
-        });
-        await this.loadProactiveAlert();
-    }
 
     async sendMessage(overrideText?: string): Promise<void> {
         const text = (overrideText ?? this.currentMessage).trim();
@@ -151,9 +134,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.sendMessage(question);
     }
 
-    dismissAlert(): void {
-        this.proactiveAlert = null;
-    }
 
     toggleMode(): void {
         this.mode = this.mode === 'simple' ? 'complete' : 'simple';
@@ -214,6 +194,11 @@ export class ChatComponent implements OnInit, OnDestroy {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
+    cancelVoice() {
+        this.currentMessage = '';
+        this.speechService.stop();
+    }
+
     private scrollToBottom(): void {
         setTimeout(() => {
             if (this.messagesContainer) {
@@ -227,4 +212,40 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.closeChat.emit();
         this.router.navigate(['/']);
     }
+
+    getChartTotal(values: number[]): number {
+        return values?.reduce((a, b) => a + b, 0) || 0;
+    }
+
+    getChartMaxIndex(values: number[]): number {
+        if (!values || values.length === 0) return 0;
+        const max = Math.max(...values);
+        return values.indexOf(max);
+    }
+
+    getChartMax(values: number[]): number {
+        if (!values || values.length === 0) return 1;
+        return Math.max(...values, 1);
+    }
+
+    formatVisualizationValue(val: number, title: string): string {
+        const t = (title || '').toLowerCase();
+        if (t.includes('venta') || t.includes('ingreso') || t.includes('monto') || t.includes('saldo') || t.includes('dinero') || t.includes('precio')) {
+            return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        return val.toLocaleString('en-US');
+    }
+
+    shouldShowTrendLabel(idx: number, values: number[]): boolean {
+        if (!values || values.length <= 7) return true;
+        // Siempre mostrar inicio, fin y el pico máximo
+        const isStart = idx === 0;
+        const isEnd = idx === values.length - 1;
+        const isPeak = idx === this.getChartMaxIndex(values);
+        // Si hay mas de 7, también mostrar uno intermedio si es largo
+        const isMid = values.length > 15 && idx === Math.floor(values.length / 2);
+
+        return isStart || isEnd || isPeak || isMid;
+    }
 }
+
