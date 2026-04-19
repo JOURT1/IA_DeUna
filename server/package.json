@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "tsx watch src/index.ts",
         "start": "node dist/index.js",
-        "build": "tsc",
+        "build": "cd .. && npm run build && cd server && tsc",
         "test": "tsx --test tests/**/*.test.ts"
     },
     "dependencies": {

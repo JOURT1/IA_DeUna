@@ -5,17 +5,24 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { chatRouter } from './routes/chat.routes.js';
 import { setLLMProvider } from './llm/llm-adapter.js';
 import { NoopProvider } from './llm/noop.provider.js';
 import { loadDataSet } from './data/data-loader.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
 
 // ─── Middleware ─────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
+
+// ─── Servir archivos estáticos de Angular ────────────
+const angularDistPath = path.join(__dirname, '../../dist/chatbot-app');
+app.use(express.static(angularDistPath));
 
 // ─── Configurar LLM Provider ──────────────────────────
 async function configureLLM(): Promise<void> {
@@ -33,6 +40,11 @@ async function configureLLM(): Promise<void> {
 
 // ─── Rutas ──────────────────────────────────────────────
 app.use('/api', chatRouter);
+
+// ─── Fallback para SPA (todas las rutas no-API van a index.html) ──
+app.get('*', (req, res) => {
+    res.sendFile(path.join(angularDistPath, 'index.html'));
+});
 
 // ─── Iniciar servidor ──────────────────────────────────
 async function start(): Promise<void> {

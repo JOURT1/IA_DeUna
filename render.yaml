@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: deuna-app
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd server && npm run build
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: LLM_PROVIDER
+        value: noop
+    staticPublicPath: dist/chatbot-app
