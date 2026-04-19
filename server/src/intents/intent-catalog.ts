@@ -115,7 +115,7 @@ export const INTENT_CATALOG: IntentDef[] = [
     {
         intent: 'strong_weak_days',
         keywords: ['días fuertes', 'dias fuertes', 'días flojos', 'qué día vendo más', 'día de la semana'],
-        patterns: [/d[ií]as?\s+(fuertes?|flojos?|buenos?|malos?)/i, /qu[eé]\s+d[ií]a\s+vendo/i, /d[ií]a\s+de\s+la\s+semana/i],
+        patterns: [/d[ií]as?\s+(fuertes?|flojos?|buenos?|malos?)/i, /qu[eé]\s+d[ií]as?\s+vendo/i, /d[ií]as?\s+de\s+la\s+semana/i, /cu[aá]les\s+son\s+los\s+d[ií]as?/i],
         description: 'Análisis de ventas por día de la semana',
         analyticsFn: 'getDayOfWeekAnalysis',
         supportsVisualization: true,

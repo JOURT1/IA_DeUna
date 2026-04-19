@@ -24,8 +24,8 @@ export function extractDateFromMessage(message: string, refDate: Date): string |
         return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
     }
 
-    // "ayer"
-    if (/\bayer\b/.test(normalized)) {
+    // "ayer" o "aller" (tolerancia a ortografía)
+    if (/\b(ayer|aller)\b/.test(normalized)) {
         const yesterday = new Date(refDate);
         yesterday.setDate(yesterday.getDate() - 1);
         const y = yesterday.getFullYear();

@@ -68,10 +68,11 @@ REGLAS:
 - Sé tolerante a errores ortográficos (ej: "caunto ved" -> "sales_today").
 - Si el usuario saluda, usa "greeting".
 - Si pide ayuda, usa "help".
-- PRIORIDAD DE FECHAS:
+- PRIORIDAD DE FECHAS Y DÍAS:
   - Si menciona "hoy" → usa "sales_today" (NO sales_this_week)
-  - Si menciona una fecha específica como "17 de abril", "el 15", "ayer" → usa "sales_specific_date"
-  - Si menciona "esta semana" → usa "sales_this_week"
+  - Si menciona una fecha específica ("17 de abril", "ayer", "aller") → usa "sales_specific_date"
+  - Si pregunta "qué días" o "mejores días" de la semana → usa "strong_weak_days" (NO sales_this_week)
+  - Si pide el total de "esta semana" → usa "sales_this_week"
   - Si menciona "este mes" → usa "sales_this_month"
 - La clave es distinguir entre consultas de un DÍA ESPECÍFICO vs períodos (semana/mes).`;
 

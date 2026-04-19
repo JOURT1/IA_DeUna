@@ -1,0 +1,92 @@
+[
+  {
+    "num": 1,
+    "question": "¿Cuánto vendí hoy?",
+    "intent": "sales_today",
+    "answer": "Hoy, en Tienda Don Pepe, lograste ventas por un total de $68.27, distribuidas en 4 transacciones. Esto indica que tus clientes están comprando y visitando tu tienda, lo cual es un buen indicador de actividad. ¡Sigue así y busca maneras de atraer aún más clientes! 💪"
+  },
+  {
+    "num": 2,
+    "question": "¿Cuánto vendí el 17 de abril?",
+    "intent": "sales_specific_date",
+    "answer": "El jueves 17 de abril fue un buen día para Tienda Don Pepe, ya que lograste vender un total de $211.79 en solo 6 transacciones. Esto indica que, aunque tuviste pocas ventas, el monto promedio por transacción fue bastante sólido. ¡Sigue así y busca maneras de atraer más clientes para aumentar tus ventas! 💪📈"
+  },
+  {
+    "num": 3,
+    "question": "¿Cuánto vendí esta semana?",
+    "intent": "sales_this_week",
+    "answer": "Esta semana, en Tienda Don Pepe, lograste un total de ventas de $434.20, distribuidos en 17 transacciones. Esto significa que tu negocio está teniendo un buen movimiento, lo cual es positivo. ¡Sigue así! Puedes analizar qué productos están teniendo más demanda y considerar promociones para aumentar tus ventas la próxima semana. 📈💪"
+  },
+  {
+    "num": 4,
+    "question": "¿Cuánto vendí este mes?",
+    "intent": "sales_this_month",
+    "answer": "Este mes, en Tienda Don Pepe, lograste un total de ventas de $2,034.56, lo que se traduce en 66 transacciones. ¡Eso es un gran avance! Es un buen momento para analizar qué productos han tenido más éxito y considerar estrategias para seguir incrementando tus ventas. 📈✨"
+  },
+  {
+    "num": 5,
+    "question": "¿Cómo voy comparado con el mes pasado?",
+    "intent": "sales_comparison",
+    "answer": "Este mes, en Tienda Don Pepe, tus ventas alcanzaron $2034.56, lo que representa una disminución de $1546.42 en comparación con los $3580.98 del mes pasado. Esto equivale a una baja del 43.2%. \n\nEs importante analizar qué factores han influido en esta disminución para poder implementar estrategias que te ayuden a recuperar y aumentar tus ventas. ¡Revisa tus promociones, la variedad de productos y la atención al cliente para mejorar el próximo mes! 💪📈"
+  },
+  {
+    "num": 6,
+    "question": "¿Cuál fue mi mejor día de ventas?",
+    "intent": "best_day",
+    "answer": "El lunes 3 de marzo fue un gran día para Tu Tienda Don Pepe, ya que lograste alcanzar ventas por un total de $375.24. ¡Es un excelente resultado que demuestra el interés de tus clientes! Aprovecha esta información para planificar tus estrategias de venta en el futuro y considera qué acciones te llevaron a ese éxito. 💪📈"
+  },
+  {
+    "num": 7,
+    "question": "¿Qué clientes no han vuelto?",
+    "intent": "customer_churn",
+    "answer": "¡Excelente noticia para Tienda Don Pepe! Todos tus clientes habituales han realizado una compra recientemente, lo que indica que estás haciendo un gran trabajo al mantener su interés. Esto es clave para la salud de tu negocio, ya que la fidelidad de tus clientes es fundamental. Sigue ofreciendo un buen servicio y productos atractivos para que continúen regresando. ¡Sigue así! 🎉"
+  },
+  {
+    "num": 8,
+    "question": "¿Quiénes son mis clientes más frecuentes?",
+    "intent": "repeat_customers",
+    "answer": "¡Hola! En Tienda Don Pepe, cuentas con 10 clientes frecuentes que regresan a hacer compras. Entre ellos, Carlos Mendoza se destaca como el más activo, ya que ha visitado tu tienda 149 veces, acumulando un total de $3,992.74 en compras. Esto muestra que tienes una base leal de clientes, y es importante seguir cultivando esa relación para aumentar tus ventas. 😊"
+  },
+  {
+    "num": 9,
+    "question": "¿Cuál es mi ticket promedio?",
+    "intent": "average_ticket",
+    "answer": "¡Hola! En Tienda Don Pepe, tu ticket promedio por venta es de $27.77. Esto se ha calculado en base a un total de 1233 ventas. Este dato es importante porque te ayuda a entender cuánto están gastando tus clientes en cada compra. Si deseas aumentar este promedio, podrías considerar ofrecer productos complementarios o promociones especiales. ¡Sigue así! 💼✨"
+  },
+  {
+    "num": 10,
+    "question": "¿Qué días de la semana vendo más?",
+    "intent": "strong_weak_days",
+    "answer": "Para Tienda Don Pepe, el jueves se destaca como tu mejor día de ventas, con un promedio de $29.64. En contraste, el sábado es el día más flojo, con un promedio de $25.12. Esto sugiere que podrías considerar estrategias para aumentar las ventas los sábados, tal vez ofreciendo promociones o eventos especiales para atraer más clientes en ese día. ¡Aprovecha tus puntos fuertes y trabaja en los débiles! 📈💪"
+  },
+  {
+    "num": 11,
+    "question": "¿Cómo va la tendencia de mis ventas?",
+    "intent": "sales_trend",
+    "answer": "En Tienda Don Pepe, has notado una disminución en tus ventas. El promedio diario de ingresos ha bajado de $132.19 a $74.40, lo que representa una caída del 43.7%. Es importante analizar las causas de esta baja y considerar estrategias para mejorar tus ventas, como promociones o cambios en tu oferta de productos. ¡No te desanimes, siempre hay oportunidades para crecer! 📉💪"
+  },
+  {
+    "num": 12,
+    "question": "¿Qué es lo que más vendo?",
+    "intent": "top_products",
+    "answer": "¡Hola! Para Tienda Don Pepe, tu categoría más destacada es \"granos\", con un total de ventas de $9,310.11. Esto es un gran logro y muestra que tus clientes valoran mucho estos productos. Las siguientes categorías que también están generando buenas ventas son \"limpieza\", con $6,018.79, y \"lácteos\", que alcanzó los $5,042.20. \n\nTe animo a seguir impulsando las ventas de granos y a considerar estrategias para potenciar aún más las categorías de limpieza y lácteos. ¡Sigue así! 🌟"
+  },
+  {
+    "num": 13,
+    "question": "¿Cómo pagan mis clientes?",
+    "intent": "payment_methods",
+    "answer": "Para Tienda Don Pepe, el método de pago más popular entre tus clientes es \"deuna\", con un total de ventas de $34,235.80 a través de 1,233 transacciones. Esto indica que tus clientes prefieren utilizar esta opción, por lo que podrías considerar promoverla aún más para facilitar sus compras y potenciar tus ventas. 💳✨"
+  },
+  {
+    "num": 14,
+    "question": "Dame un consejo para mi negocio",
+    "intent": "proactive_alert",
+    "answer": "📉 Caída en ventas reciente\nTus ventas diarias bajaron un 43.7% en la última semana (de $132.19 a $74.40 promedio por día). Considera hacer una promoción o contactar a tus clientes frecuentes.\n\n📅 Dato útil sobre tus ventas\nTu día más fuerte es jueves y el más flojo es sábado. Podrías hacer promociones los sábado para equilibrar tus ventas."
+  },
+  {
+    "num": 15,
+    "question": "caunto bendi aller",
+    "intent": "sales_specific_date",
+    "answer": "El jueves 17 de abril fue un buen día para Tienda Don Pepe, ya que lograste vender un total de $211.79 en solo 6 transacciones. Esto indica que, aunque tuviste pocas ventas, el monto promedio por transacción fue bastante sólido. ¡Sigue así y busca maneras de atraer más clientes para aumentar tus ventas! 💪📈"
+  }
+]
