@@ -34,6 +34,20 @@
   </div>
 
   <!-- SCROLLABLE CONTENT -->
+  <!-- NOTIFICACIÓN DENTRO DEL FRAME -->
+  @if (notification && notification.visible) {
+  <div class="in-phone-notification" [class]="'notif-' + notification.type">
+    <div class="notif-icon">
+      <img src="IA_Icono.png" alt="DeUna" />
+    </div>
+    <div class="notif-text">
+      <p class="notif-title">{{ notification.title }}</p>
+      <p class="notif-msg">{{ notification.message }}</p>
+    </div>
+    <button class="notif-close" (click)="closeNotification()">✕</button>
+  </div>
+  }
+
   <div class="scroll-area">
 
     <!-- HEADER -->

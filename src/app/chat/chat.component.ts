@@ -22,6 +22,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     isTyping = false;
     isListening = false;
     speechSupported = false;
+    micDisabled = false;
+    isFirefox = false;
     mode: 'simple' | 'complete' = 'simple';
 
     merchants: Merchant[] = [];
@@ -42,6 +44,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     async ngOnInit(): Promise<void> {
         this.speechSupported = this.speechService.isSupported;
+        this.isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+        console.log('🎤 Micrófono soportado:', this.speechSupported);
+        console.log('🦊 ¿Es Firefox?:', this.isFirefox);
 
         // Cargar datos iniciales
         try {
@@ -60,31 +65,61 @@ export class ChatComponent implements OnInit, OnDestroy {
 
         // Mensaje de bienvenida
         const merchantName = this.merchants.find(m => m.merchantId === this.selectedMerchantId)?.merchantName ?? 'tu negocio';
+        let welcomeMessage = `¡Hola! 👋 Soy tu Contador de Bolsillo para ${merchantName}. Pregúntame sobre tus ventas, clientes o tendencias. ¡Estoy aquí para ayudarte!`;
+        
+        // Si es Firefox, agregar nota sobre el micrófono
+        if (this.isFirefox && !this.speechSupported) {
+            welcomeMessage += '\n\n📢 Nota: El micrófono no funciona en Firefox. Por favor usa Chrome o Edge para usar esa función.';
+        }
+        
         this.messages.push({
-            text: `¡Hola! 👋 Soy tu Contador de Bolsillo para ${merchantName}. Pregúntame sobre tus ventas, clientes o tendencias. ¡Estoy aquí para ayudarte!`,
+            text: welcomeMessage,
             sender: 'bot',
             timestamp: new Date()
         });
 
         // Suscripción a voz
         this.speechSub = this.speechService.events$.subscribe(event => {
+            console.log('🔔 Evento recibido:', event.type);
+            console.log('   Datos:', event);
             switch (event.type) {
                 case 'result':
-                    if (event.text) this.currentMessage = event.text;
+                    console.log('✍️ Escribiendo texto EN EL INPUT:', event.text);
+                    if (event.text) {
+                        this.currentMessage = event.text;
+                        console.log('✅ currentMessage actualizado a:', this.currentMessage);
+                    }
                     break;
                 case 'start':
+                    console.log('▶️ Inicio de grabación');
                     this.isListening = true;
                     this.startTimer();
                     break;
                 case 'end':
+                    console.log('⏹️ Fin de grabación');
                     this.isListening = false;
                     this.stopTimer();
-                    if (this.currentMessage.trim().length > 0) {
-                        this.sendMessage();
-                    }
+                    // El texto queda en currentMessage para que el usuario lo vea y confirme
                     break;
                 case 'error':
+                    console.log('❌ Error de voz:', event.error);
                     this.isListening = false;
+                    this.stopTimer();
+                    
+                    // Detectar si el micrófono fue deshabilitado
+                    if (event.error && event.error.includes('no disponible')) {
+                        this.micDisabled = true;
+                        this.speechSupported = false;
+                    }
+                    
+                    // Mostrar error como mensaje del bot
+                    this.messages.push({
+                        text: `${event.error}`,
+                        sender: 'bot',
+                        timestamp: new Date(),
+                        createdInProMode: this.mode === 'complete'
+                    });
+                    this.scrollToBottom();
                     break;
             }
         });
@@ -100,7 +135,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         const text = (overrideText ?? this.currentMessage).trim();
         if (!text) return;
 
-        this.messages.push({ text, sender: 'user', timestamp: new Date() });
+        this.messages.push({ text, sender: 'user', timestamp: new Date(), createdInProMode: this.mode === 'complete' });
         this.currentMessage = '';
         this.scrollToBottom();
 
@@ -116,7 +151,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 sender: 'bot',
                 timestamp: new Date(),
                 visualization: response.visualization,
-                suggestedFollowUps: response.suggestedFollowUps
+                suggestedFollowUps: response.suggestedFollowUps,
+                createdInProMode: this.mode === 'complete'
             });
             this.scrollToBottom();
         } catch {
@@ -140,7 +176,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
 
     toggleVoice(): void {
+        console.log('🎤 toggleVoice llamado, isListening:', this.isListening, 'micDisabled:', this.micDisabled);
         this.speechService.toggle();
+    }
+
+    startVoice(): void {
+        console.log('startVoice llamado');
+        this.speechService.start();
     }
 
     formatTime(date: Date): string {
@@ -247,5 +289,5 @@ export class ChatComponent implements OnInit, OnDestroy {
 
         return isStart || isEnd || isPeak || isMid;
     }
-}
 
+}

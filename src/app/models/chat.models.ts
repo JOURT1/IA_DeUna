@@ -9,6 +9,7 @@ export interface ChatMessage {
     visualization?: Visualization | null;
     proactiveInsight?: ProactiveInsight | null;
     suggestedFollowUps?: string[];
+    createdInProMode?: boolean;
 }
 
 export interface Visualization {

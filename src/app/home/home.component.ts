@@ -1,20 +1,28 @@
-import { Component, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { ChatComponent } from '../chat/chat.component';
+import { NotificationService, Notification } from '../services/notification.service';
+import { Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-home',
-  imports: [FormsModule, ChatComponent],
+  imports: [FormsModule, CommonModule, ChatComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent implements OnDestroy {
+export class HomeComponent implements OnInit, OnDestroy {
   balanceVisible = false;
   chatOpen = false;
   inputMessage = '';
-  advancedMode = false;        // switch: chat avanzado
+  advancedMode = false;
 
-  // Posición del ícono flotante (esquina inferior derecha por defecto)
+  // Notificaciones
+  notification: Notification | null = null;
+  private notificationSub?: Subscription;
+
+  // Posición del ícono flotante
   iconX = 270;
   iconY = 560;
 
@@ -23,7 +31,24 @@ export class HomeComponent implements OnDestroy {
   private offsetY = 0;
   private moved = false;
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private notificationService: NotificationService
+  ) { }
+
+  ngOnInit(): void {
+    this.notificationSub = this.notificationService.notification$.subscribe(notif => {
+      this.notification = notif;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.notificationSub?.unsubscribe();
+  }
+
+  closeNotification(): void {
+    this.notificationService.closeNotification();
+  }
 
   toggleBalance() {
     this.balanceVisible = !this.balanceVisible;
@@ -39,7 +64,6 @@ export class HomeComponent implements OnDestroy {
     this.chatOpen = false;
   }
 
-  // ── MOUSE DRAG ──────────────────────────────────────────
   startDrag(event: MouseEvent) {
     this.dragging = true;
     this.moved = false;
@@ -61,7 +85,6 @@ export class HomeComponent implements OnDestroy {
     this.dragging = false;
   }
 
-  // ── TOUCH DRAG ──────────────────────────────────────────
   startDragTouch(event: TouchEvent) {
     this.dragging = true;
     this.moved = false;
@@ -85,13 +108,15 @@ export class HomeComponent implements OnDestroy {
     this.dragging = false;
   }
 
-  // Mantener el ícono dentro del phone-wrapper (370x760, ícono ~70px)
-  private clampX(x: number) {
-    return Math.max(0, Math.min(x, 300));
-  }
-  private clampY(y: number) {
-    return Math.max(0, Math.min(y, 690));
+  private clampX(x: number): number {
+    const min = 10;
+    const max = window.innerWidth - 60;
+    return Math.max(min, Math.min(max, x));
   }
 
-  ngOnDestroy() { }
+  private clampY(y: number): number {
+    const min = 10;
+    const max = window.innerHeight - 60;
+    return Math.max(min, Math.min(max, y));
+  }
 }

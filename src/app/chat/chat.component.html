@@ -44,7 +44,7 @@
         </div>
 
         <!-- Table Viz -->
-        @if (message.visualization && message.visualization.type === 'table') {
+        @if (message.visualization && message.visualization.type === 'table' && message.createdInProMode) {
         <div class="viz-card">
           <h4>{{ message.visualization.title }}</h4>
           <div class="table-scroll">
@@ -67,7 +67,7 @@
         }
 
         <!-- Bar/Pie Viz - Insight Card -->
-        @if (message.visualization && message.visualization.type !== 'table') {
+        @if (message.visualization && message.visualization.type !== 'table' && message.createdInProMode) {
         <div class="insight-card">
           <div class="insight-header">
             <h4 class="insight-title">{{ message.visualization.title }}</h4>
@@ -154,7 +154,7 @@
   <div class="chat-input-container">
     @if (isListening) {
     <div class="recording-bar whatsapp-style">
-      <button class="cancel-record-btn" (click)="cancelVoice()">
+      <button class="cancel-record-btn" aria-label="Cancelar grabación" title="Cancelar" (click)="cancelVoice()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"></polyline>
@@ -171,24 +171,24 @@
         <span class="recording-text slide-text">{{ currentMessage || 'Escuchando...' }}</span>
       </div>
 
-      <button class="send-record-btn" (click)="toggleVoice()">
+      <button class="send-record-btn" aria-label="Detener grabación" title="Detener" (click)="toggleVoice()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          <rect x="6" y="4" width="4" height="16"></rect>
+          <rect x="14" y="4" width="4" height="16"></rect>
         </svg>
       </button>
     </div>
     } @else {
     <div class="input-pill">
-      <input type="text" [(ngModel)]="currentMessage" (keyup.enter)="sendMessage()" placeholder="Escribe un mensaje..."
-        autocomplete="off">
+      <input type="text" [(ngModel)]="currentMessage" (keyup.enter)="sendMessage()" placeholder="Escribe tu mensaje..."
+        autocomplete="off" aria-label="Campo de mensajes">
 
-      @if (speechSupported) {
-      <button class="mic-btn" (click)="toggleVoice()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B21B6" stroke-width="2.5"
+      @if (speechSupported && !micDisabled) {
+      <button class="mic-btn" (click)="startVoice()" aria-label="Activar micrófono" title="Hablar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+          <path d="M12 1a3 3 0 0 0-3 3v12a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
           <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
           <line x1="12" y1="19" x2="12" y2="23"></line>
           <line x1="8" y1="23" x2="16" y2="23"></line>
@@ -196,7 +196,7 @@
       </button>
       }
 
-      <button class="send-btn" (click)="sendMessage()" [class.active]="currentMessage.trim().length > 0">
+      <button class="send-btn" (click)="sendMessage()" [class.active]="currentMessage.trim().length > 0" aria-label="Enviar mensaje">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>

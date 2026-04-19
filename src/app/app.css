@@ -3,3 +3,219 @@
     width: 100%;
     height: 100vh;
 }
+
+/* 
+   BOTONES SIMULADORES DE ALERTAS MEJORADOS
+   ============================================ */
+.alert-simulators {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.simulator-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  min-width: 160px;
+}
+
+.simulator-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.simulator-btn:active {
+  transform: translateY(-2px);
+}
+
+/* Estilos específicos por tipo */
+.simulator-btn.btn-success {
+  border-color: #86efac;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+}
+
+.simulator-btn.btn-success:hover {
+  border-color: #4ade80;
+  box-shadow: 0 8px 20px rgba(74, 222, 128, 0.2);
+}
+
+.simulator-btn.btn-warning {
+  border-color: #fdba74;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.simulator-btn.btn-warning:hover {
+  border-color: #f97316;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.2);
+}
+
+.simulator-btn.btn-info {
+  border-color: #67e8f9;
+  background: linear-gradient(135deg, #ecf0ff 0%, #f0f9ff 100%);
+}
+
+.simulator-btn.btn-info:hover {
+  border-color: #06b6d4;
+  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.2);
+}
+
+.btn-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.btn-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.btn-label {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+}
+
+.btn-desc {
+  font-size: 11px;
+  opacity: 0.75;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .alert-simulators {
+    bottom: 16px;
+    right: 16px;
+    gap: 8px;
+  }
+
+  .simulator-btn {
+    padding: 10px 12px;
+    min-width: 140px;
+  }
+
+  .btn-icon {
+    font-size: 18px;
+  }
+
+  .btn-label {
+    font-size: 10px;
+  }
+
+  .btn-desc {
+    font-size: 10px;
+  }
+}
+
+/* Notificación dentro del frame (phone) */
+.in-phone-notification {
+  position: fixed;
+  top: 50px;
+  left: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  animation: slideInNotif 0.3s ease-out;
+  border-left: 4px solid #6366f1;
+}
+
+.in-phone-notification.notif-success {
+  border-left-color: #4ade80;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+}
+
+.in-phone-notification.notif-warning {
+  border-left-color: #f97316;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.in-phone-notification.notif-info {
+  border-left-color: #06b6d4;
+  background: linear-gradient(135deg, #ecf0ff 0%, #f0f9ff 100%);
+}
+
+.notif-icon {
+  flex-shrink: 0;
+}
+
+.notif-icon img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.notif-text {
+  flex: 1;
+}
+
+.notif-title {
+  font-weight: 600;
+  font-size: 13px;
+  margin: 0 0 2px 0;
+  color: #1f2937;
+}
+
+.notif-msg {
+  font-size: 12px;
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.notif-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #d1d5db;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.notif-close:hover {
+  color: #6b7280;
+  background: #f3f4f6;
+  border-radius: 50%;
+}
+
+@keyframes slideInNotif {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
