@@ -1,10 +1,10 @@
 import { Component, OnDestroy, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
+import { ChatComponent } from '../chat/chat.component';
 @Component({
   selector: 'app-home',
-  imports: [FormsModule],
+  imports: [FormsModule, ChatComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -23,7 +23,7 @@ export class HomeComponent implements OnDestroy {
   private offsetY = 0;
   private moved = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   toggleBalance() {
     this.balanceVisible = !this.balanceVisible;
@@ -93,5 +93,5 @@ export class HomeComponent implements OnDestroy {
     return Math.max(0, Math.min(y, 690));
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

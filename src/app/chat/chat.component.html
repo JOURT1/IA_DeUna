@@ -1,50 +1,41 @@
-<div class="chat-container">
+<div class="chat-container" [class.pro-mode]="mode !== 'simple'">
+  <!-- HEADER -->
   <header class="chat-header">
-    <div class="header-avatar">
-      <div class="avatar-ring">
-        <div class="avatar-icon">💰</div>
+    <button class="back-btn" aria-label="Volver" (click)="onBackClick()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+    </button>
+    <div class="header-center">
+      <img src="IA_Icono.png" class="chat-mascot-header" alt="Mascota DeUna" />
+      <div class="header-info">
+        <h1>Asistente DeUna</h1>
+        <span class="status-text"><span class="status-dot"></span> En línea</span>
       </div>
-      <div class="status-dot"></div>
     </div>
-    <div class="header-info">
-      <h1>Mi Contador de Bolsillo</h1>
-      <span class="status-text">En línea</span>
-    </div>
-    <div class="header-controls">
-      @if (merchants.length > 1) {
-      <select class="merchant-select" [(ngModel)]="selectedMerchantId" (change)="onMerchantChange()">
-        @for (m of merchants; track m.merchantId) {
-        <option [value]="m.merchantId">{{ m.merchantName }}</option>
-        }
-      </select>
-      }
-      <button class="mode-toggle" (click)="toggleMode()"
-        [title]="mode === 'simple' ? 'Modo simple activo' : 'Modo completo activo'">
-        {{ mode === 'simple' ? '⚡' : '📊' }}
-        <span class="mode-label">{{ mode === 'simple' ? 'Simple' : 'Completo' }}</span>
-      </button>
+    <div class="header-right">
+      <span class="pro-label">PRO</span>
+      <div class="toggle-switch" [class.active]="mode !== 'simple'" (click)="toggleMode()">
+        <div class="toggle-handle"></div>
+      </div>
     </div>
   </header>
 
-  <!-- Alerta proactiva -->
-  @if (proactiveAlert) {
-  <div class="proactive-alert" [class]="'severity-' + proactiveAlert.severity">
-    <div class="alert-content">
-      <span class="alert-icon">{{ getSeverityIcon(proactiveAlert.severity) }}</span>
-      <div class="alert-text">
-        <strong>{{ proactiveAlert.title }}</strong>
-        <p>{{ proactiveAlert.message }}</p>
-      </div>
-      <button class="alert-dismiss" (click)="dismissAlert()">✕</button>
-    </div>
+  <!-- BANNER PRO MODE -->
+  <div class="advanced-banner" [class.visible]="mode !== 'simple'">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+    </svg>
+    <span>Modo Pro activado</span>
   </div>
-  }
 
+  <!-- CHAT MESSAGES -->
   <div class="chat-messages" #messagesContainer>
     @for (message of messages; track $index) {
-    <div class="message" [class.user]="message.sender === 'user'" [class.bot]="message.sender === 'bot'">
+    <div class="message-row" [class.user]="message.sender === 'user'" [class.bot]="message.sender === 'bot'">
       @if (message.sender === 'bot') {
-      <div class="message-avatar">💰</div>
+      <img src="IA_Icono.png" class="chat-mascot-message" alt="Bot" />
       }
       <div class="message-content">
         <div class="message-bubble">
@@ -52,25 +43,21 @@
           <span class="message-time">{{ formatTime(message.timestamp) }}</span>
         </div>
 
-        <!-- Visualización: tabla -->
+        <!-- Table Viz -->
         @if (message.visualization && message.visualization.type === 'table') {
-        <div class="viz-container">
-          <h4 class="viz-title">{{ message.visualization.title }}</h4>
-          <div class="table-wrapper">
-            <table class="data-table">
+        <div class="viz-card">
+          <h4>{{ message.visualization.title }}</h4>
+          <div class="table-scroll">
+            <table>
               <thead>
                 <tr>
-                  @for (header of message.visualization.data.headers; track header) {
-                  <th>{{ header }}</th>
-                  }
+                  @for (header of message.visualization.data.headers; track header) { <th>{{ header }}</th> }
                 </tr>
               </thead>
               <tbody>
                 @for (row of message.visualization.data.rows; track $index) {
                 <tr>
-                  @for (cell of row; track $index) {
-                  <td>{{ cell }}</td>
-                  }
+                  @for (cell of row; track $index) { <td>{{ cell }}</td> }
                 </tr>
                 }
               </tbody>
@@ -79,29 +66,29 @@
         </div>
         }
 
-        <!-- Visualización: gráfico bar/line/pie (simple CSS) -->
+        <!-- Bar/Pie Viz -->
         @if (message.visualization && message.visualization.type !== 'table') {
-        <div class="viz-container">
-          <h4 class="viz-title">{{ message.visualization.title }}</h4>
+        <div class="viz-card">
+          <h4>{{ message.visualization.title }}</h4>
           @if (message.visualization.type === 'bar' || message.visualization.type === 'line') {
           <div class="chart-bars">
             @for (label of message.visualization.data.labels; track label; let i = $index) {
-            <div class="bar-item">
+            <div class="bar-col">
               <div class="bar-fill" [style.height.%]="getBarHeight(message.visualization!.data.values, i)">
-                <span class="bar-value">${{ message.visualization!.data.values[i] }}</span>
+                <span class="bar-val">${{ message.visualization!.data.values[i] }}</span>
               </div>
-              <span class="bar-label">{{ formatBarLabel(label) }}</span>
+              <span class="bar-lbl">{{ formatBarLabel(label) }}</span>
             </div>
             }
           </div>
           }
           @if (message.visualization.type === 'pie') {
-          <div class="pie-list">
+          <div class="chart-pie">
             @for (label of message.visualization.data.labels; track label; let i = $index) {
-            <div class="pie-item">
-              <span class="pie-dot" [style.background]="getPieColor(i)"></span>
-              <span class="pie-label">{{ label }}</span>
-              <span class="pie-value">${{ message.visualization!.data.values[i] }}</span>
+            <div class="pie-row">
+              <span class="pie-color" [style.background]="getPieColor(i)"></span>
+              <span class="pie-lbl">{{ label }}</span>
+              <span class="pie-val">${{ message.visualization!.data.values[i] }}</span>
             </div>
             }
           </div>
@@ -109,91 +96,66 @@
         </div>
         }
 
-        <!-- Follow-ups sugeridos -->
+        <!-- Follow-ups -->
         @if (message.suggestedFollowUps && message.suggestedFollowUps.length > 0) {
         <div class="follow-ups">
           @for (q of message.suggestedFollowUps; track q) {
-          <button class="follow-up-chip" (click)="askSuggested(q)">{{ q }}</button>
+          <button class="follow-up-btn" (click)="askSuggested(q)">{{ q }}</button>
           }
         </div>
         }
       </div>
-      @if (message.sender === 'user') {
-      <div class="message-avatar user-avatar">👤</div>
-      }
     </div>
     }
 
     @if (isTyping) {
-    <div class="message bot">
-      <div class="message-avatar">💰</div>
+    <div class="message-row bot">
+      <img src="IA_Icono.png" class="chat-mascot-message" alt="Bot" />
       <div class="message-content">
-        <div class="message-bubble typing-bubble">
-          <div class="typing-indicator">
-            <span></span><span></span><span></span>
-          </div>
+        <div class="message-bubble typing">
+          <span></span><span></span><span></span>
         </div>
       </div>
     </div>
     }
   </div>
 
-  <!-- Chips de preguntas sugeridas (solo al inicio) -->
-  @if (messages.length <= 1 && sampleQuestions.length> 0) {
-    <div class="suggested-section">
-      <span class="suggested-label">Prueba preguntando:</span>
-      <div class="suggested-chips">
-        @for (q of sampleQuestions; track q.intent) {
-        <button class="chip" (click)="askSuggested(q.question)">{{ q.question }}</button>
-        }
-      </div>
+  <!-- INPUT AREA -->
+  <div class="chat-input-container">
+    @if (isListening) {
+    <div class="recording-bar">
+      <div class="recording-pulsing"></div>
+      <span class="timer">{{ formatDuration(recordingSeconds) }}</span>
+      <span class="recording-text">{{ currentMessage || 'Escuchando...' }}</span>
+      <button class="stop-btn" (click)="toggleVoice()">
+        <div class="stop-square"></div>
+      </button>
+    </div>
+    } @else {
+    <div class="input-pill">
+      <input type="text" [(ngModel)]="currentMessage" (keyup.enter)="sendMessage()" placeholder="Escribe un mensaje..."
+        autocomplete="off">
+
+      @if (speechSupported) {
+      <button class="mic-btn" (click)="toggleVoice()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B21B6" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
+      </button>
+      }
+
+      <button class="send-btn" (click)="sendMessage()" [class.active]="currentMessage.trim().length > 0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
     </div>
     }
-
-    <div class="chat-input-area">
-      @if (isListening) {
-      <div class="listening-indicator">
-        <div class="pulse-ring"></div>
-        <span>🎤 Escuchando...</span>
-      </div>
-      }
-      <div class="input-wrapper" [class.recording]="isListening">
-        @if (!isListening) {
-        <input type="text" [(ngModel)]="currentMessage" (keyup.enter)="sendMessage()"
-          placeholder="Pregunta sobre tu negocio..." id="chatInput" autocomplete="off" />
-        } @else {
-        <div class="recording-overlay">
-          <div class="wave-container">
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <span class="timer">{{ formatDuration(recordingSeconds) }}</span>
-          <span class="recording-text">{{ currentMessage || 'Escuchando...' }}</span>
-        </div>
-        }
-
-        @if (speechSupported) {
-        <button class="voice-btn" [class.active]="isListening" (click)="toggleVoice()" id="voiceBtn"
-          [attr.aria-label]="isListening ? 'Detener' : 'Hablar'">
-          @if (isListening) {
-          <div class="stop-icon"></div>
-          } @else {
-          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-            <path
-              d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-          </svg>
-          }
-        </button>
-        }
-
-        @if (!isListening) {
-        <button class="send-btn" (click)="sendMessage()" [disabled]="!currentMessage.trim()" id="sendBtn"
-          aria-label="Enviar mensaje">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-          </svg>
-        </button>
-        }
-      </div>
-    </div>
+  </div>
 </div>

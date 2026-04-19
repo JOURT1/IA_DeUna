@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ChatService } from './chat.service';
@@ -14,6 +15,7 @@ import type { ChatMessage, Merchant, ProactiveInsight, SampleQuestion } from '..
 })
 export class ChatComponent implements OnInit, OnDestroy {
     @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
+    @Output() closeChat = new EventEmitter<void>();
 
     messages: ChatMessage[] = [];
     currentMessage = '';
@@ -35,7 +37,8 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     constructor(
         private chatService: ChatService,
-        private speechService: SpeechService
+        private speechService: SpeechService,
+        private router: Router
     ) { }
 
     async ngOnInit(): Promise<void> {
@@ -218,5 +221,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 el.scrollTop = el.scrollHeight;
             }
         }, 50);
+    }
+
+    onBackClick() {
+        this.closeChat.emit();
+        this.router.navigate(['/']);
     }
 }
