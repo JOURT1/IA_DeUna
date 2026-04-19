@@ -5,6 +5,7 @@
 // Nunca inventa datos: si un campo no existe, lo dice.
 
 import { getCompletedTransactions, getMerchantData } from '../data/data-loader.js';
+import { getCurrentEcuadorDate, toLocalDateStr } from '../utils/date-utils.js';
 import type { Transaction, AnalyticsResult, Visualization } from '../types/index.js';
 
 // ─── Utilidades de fecha ───────────────────────────────
@@ -16,14 +17,6 @@ function fmtDate(d: Date): string {
 function dayName(dow: number): string {
     return ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][dow];
 }
-// Formatter de fecha LOCAL (evita desfase UTC de toISOString)
-function toLocalDateStr(d: Date): string {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-}
-
 function getWeekRange(ref: Date): { start: Date; end: Date } {
     const d = new Date(ref);
     const day = d.getDay();
@@ -54,12 +47,8 @@ function sumAmounts(txns: Transaction[]): number {
 }
 
 // ─── Referencia de fecha ───────────────────────────────
-// Usamos la fecha más reciente del dataset como "hoy" para que el demo funcione
-function getRefDate(merchantId?: string): Date {
-    const txns = getCompletedTransactions(merchantId);
-    if (txns.length === 0) return new Date();
-    const dates = txns.map(t => toDate(t.date).getTime());
-    return new Date(Math.max(...dates));
+function getRefDate(_merchantId?: string): Date {
+    return getCurrentEcuadorDate();
 }
 
 // ─── Funciones analíticas ──────────────────────────────
@@ -130,6 +119,49 @@ export function getSalesForDate(dateStr: string, merchantId?: string): Analytics
             : `No se encontraron ventas para el ${dateLabel}.`,
         metricsUsed: ['total_ventas_dia', 'num_transacciones_dia'],
         visualization: viz
+    };
+}
+
+// ─── Funciones analíticas nuevas ────────────────────────
+
+export function getSalesForYear(year: number, merchantId?: string): AnalyticsResult {
+    const txns = getCompletedTransactions(merchantId);
+
+    // Filter matching year
+    const yearlyTxns = txns.filter(t => {
+        const d = toDate(t.date);
+        return d.getFullYear() === year;
+    });
+
+    const total = sumAmounts(yearlyTxns);
+
+    // Group by month for visualization
+    const monthlyMap = new Map<number, number>();
+    for (let i = 0; i < 12; i++) monthlyMap.set(i, 0);
+
+    yearlyTxns.forEach(t => {
+        const m = toDate(t.date).getMonth();
+        monthlyMap.set(m, (monthlyMap.get(m) ?? 0) + t.amount);
+    });
+
+    const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+    const viz: Visualization = {
+        type: 'line',
+        title: `Ventas del año ${year}`,
+        data: {
+            labels: monthNames,
+            values: Array.from(monthlyMap.values()).map(v => +v.toFixed(2))
+        }
+    };
+
+    return {
+        value: { year, total: +total.toFixed(2), count: yearlyTxns.length },
+        label: yearlyTxns.length > 0
+            ? `En el año ${year} acumulaste un total de ${fmt(total)} en ${yearlyTxns.length} ventas.`
+            : `No tengo registros de ventas para el año ${year}.`,
+        metricsUsed: ['total_ventas_ano', 'conteo_transacciones_ano'],
+        visualization: yearlyTxns.length > 0 ? viz : null
     };
 }
 

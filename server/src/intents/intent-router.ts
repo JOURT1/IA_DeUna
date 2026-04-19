@@ -4,6 +4,7 @@
 
 import { INTENT_CATALOG, type IntentDef } from './intent-catalog.js';
 import type { IntentMatch } from '../types/index.js';
+import { toLocalDateStr } from '../utils/date-utils.js';
 
 const MONTH_MAP: Record<string, number> = {
     'enero': 0, 'febrero': 1, 'marzo': 2, 'abril': 3, 'mayo': 4, 'junio': 5,
@@ -12,7 +13,7 @@ const MONTH_MAP: Record<string, number> = {
 
 /**
  * Extrae una fecha del mensaje del usuario.
- * Soporta: "17 de abril", "el 15", "ayer"
+ * Soporta: "hoy", "ayer", "17 de abril", "el 15", "17 de abril de 2025".
  * Devuelve formato YYYY-MM-DD o null.
  */
 export function extractDateFromMessage(message: string, refDate: Date): string | null {
@@ -24,18 +25,28 @@ export function extractDateFromMessage(message: string, refDate: Date): string |
         return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
     }
 
+    // "hoy" y variantes naturales. Usa la referencia real pasada por la ruta,
+    // no una fecha fija ni la última fecha disponible del dataset.
+    if (/\b(hoy|d[ií]a\s+de\s+hoy|dia\s+de\s+hoy|d[ií]a\s+actual|dia\s+actual)\b/.test(normalized)) {
+        return toLocalDateStr(refDate);
+    }
+
     // "ayer" o "aller" (tolerancia a ortografía)
     if (/\b(ayer|aller)\b/.test(normalized)) {
         const yesterday = new Date(refDate);
         yesterday.setDate(yesterday.getDate() - 1);
-        const y = yesterday.getFullYear();
-        const m = String(yesterday.getMonth() + 1).padStart(2, '0');
-        const d = String(yesterday.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        return toLocalDateStr(yesterday);
     }
 
-    // "17 de abril" o "17 de abril de 2025"
-    const fullDateMatch = normalized.match(/(\d{1,2})\s+de\s+(\w+)(?:\s+de\s+(\d{4}))?/);
+    // "anteayer" 
+    if (/\b(anteayer|ante\s*ayer)\b/.test(normalized)) {
+        const dayBefore = new Date(refDate);
+        dayBefore.setDate(dayBefore.getDate() - 2);
+        return toLocalDateStr(dayBefore);
+    }
+
+    // "17 de abril" o "17 de abril de 2025" or "17 de abril del 2025"
+    const fullDateMatch = normalized.match(/(\d{1,2})\s+de\s+(\w+)(?:\s+(?:de|del)\s+(\d{4}))?/);
     if (fullDateMatch) {
         const day = parseInt(fullDateMatch[1]);
         const monthName = fullDateMatch[2];
@@ -55,6 +66,38 @@ export function extractDateFromMessage(message: string, refDate: Date): string |
             const dateStr = `${refDate.getFullYear()}-${String(refDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             return dateStr;
         }
+    }
+
+    return null;
+}
+
+/**
+ * Extrae un año del mensaje del usuario.
+ * Soporta: "2024", "este año", "año pasado"
+ * Devuelve un número de año o null.
+ */
+export function extractYearFromMessage(message: string, refDate: Date): number | null {
+    const normalized = message.toLowerCase().trim();
+
+    // "este año"
+    if (/este\s+a[ñn]o/i.test(normalized)) {
+        return refDate.getFullYear();
+    }
+
+    // "año pasado"
+    if (/a[ñn]o\s+pasado/i.test(normalized)) {
+        return refDate.getFullYear() - 1;
+    }
+
+    // "año antepasado"
+    if (/(a[ñn]o\s+ante(\s*)pasado|ante(\s*)pasado)/i.test(normalized)) {
+        return refDate.getFullYear() - 2;
+    }
+
+    // Específico: "del 2025", "en 2024"
+    const yearMatch = normalized.match(/\b(202[4-6])\b/);
+    if (yearMatch) {
+        return parseInt(yearMatch[1]);
     }
 
     return null;
@@ -105,17 +148,16 @@ export function getIntentDef(intent: string): IntentDef | undefined {
 
 export function getSampleQuestions(): Array<{ question: string; intent: string }> {
     return [
-        { question: '¿Cuánto vendí hoy?', intent: 'sales_today' },
-        { question: '¿Cuánto vendí esta semana?', intent: 'sales_this_week' },
-        { question: '¿Cómo voy vs el mes pasado?', intent: 'sales_comparison' },
-        { question: '¿Cuál fue mi mejor día?', intent: 'best_day' },
-        { question: '¿Qué clientes no han vuelto?', intent: 'customer_churn' },
+        { question: '¿Cómo voy comparado con el mes pasado?', intent: 'sales_comparison' },
+        { question: '¿Qué clientes están en riesgo de no volver?', intent: 'customer_churn' },
+        { question: '¿Cuál es la tendencia de mis ventas?', intent: 'sales_trend' },
+        { question: '¿Quiénes son mis mejores clientes?', intent: 'repeat_customers' },
+        { question: 'Dame un consejo sobre mi negocio', intent: 'proactive_alert' },
+        { question: '¿Cuánto vendí en todo el 2025?', intent: 'sales_specific_year' },
+        { question: '¿Cuál fue mi mejor día de ventas?', intent: 'best_day' },
         { question: '¿Cuál es mi ticket promedio?', intent: 'average_ticket' },
-        { question: '¿Cómo va la tendencia?', intent: 'sales_trend' },
         { question: '¿Qué es lo que más vendo?', intent: 'top_products' },
-        { question: '¿Cómo pagan mis clientes?', intent: 'payment_methods' },
-        { question: '¿Qué días son más fuertes?', intent: 'strong_weak_days' },
-        { question: 'Dame un consejo', intent: 'proactive_alert' },
+        { question: '¿Cuáles son mis días más fuertes?', intent: 'strong_weak_days' },
+        { question: '¿Cómo pagan mis clientes?', intent: 'payment_methods' }
     ];
 }
-

@@ -42,7 +42,7 @@ async function configureLLM(): Promise<void> {
 app.use('/api', chatRouter);
 
 // ─── Fallback para SPA (todas las rutas no-API van a index.html) ──
-app.get('*', (req, res) => {
+app.use((req, res) => {
     res.sendFile(path.join(angularDistPath, 'index.html'));
 });
 

@@ -15,16 +15,22 @@ export interface IntentDef {
 export const INTENT_CATALOG: IntentDef[] = [
     {
         intent: 'sales_today',
-        keywords: ['hoy', 'vendí hoy', 'ventas hoy', 'ventas de hoy'],
-        patterns: [/cu[aá]nto\s+vend[ií]\s+hoy/i, /ventas?\s+(de\s+)?hoy/i, /hoy\s+cu[aá]nto/i, /hoy\s+vend[ií]/i],
-        description: 'Total de ventas del día de hoy',
+        keywords: ['hoy', 'día de hoy', 'dia de hoy', 'día actual', 'dia actual', 'vendí hoy', 'he vendido hoy', 'ventas hoy', 'ventas de hoy', 'ventas del día de hoy', 'ventas del dia de hoy'],
+        patterns: [
+            /cu[aá]nto\s+(he\s+)?vend(i|í)(do)?\s+(en\s+)?(el\s+d[ií]a\s+de\s+)?hoy/i,
+            /ventas?\s+(de|del)?\s*(d[ií]a\s+de\s+)?hoy/i,
+            /(d[ií]a\s+actual|hoy)\s+cu[aá]nto/i,
+            /hoy\s+(cu[aá]nto\s+)?(he\s+)?vend(i|í)(do)?/i,
+            /cu[aá]nto\s+(he\s+)?generad(o|a)\s+(en\s+)?(el\s+d[ií]a\s+de\s+)?hoy/i
+        ],
+        description: 'Total de ventas del día de hoy (fecha real de Quito, Ecuador)',
         analyticsFn: 'getSalesToday',
         supportsVisualization: true,
         followUps: ['¿Quieres ver las ventas de esta semana?', '¿Quieres comparar con ayer?']
     },
     {
         intent: 'sales_specific_date',
-        keywords: ['vendí el', 'ventas del', 'de abril', 'de mayo', 'de junio', 'de julio', 'de agosto', 'de septiembre', 'de octubre', 'de noviembre', 'de diciembre', 'de enero', 'de febrero', 'de marzo', 'ayer', '2025-', '2024-'],
+        keywords: ['vendí el', 'ventas del', 'de abril', 'de mayo', 'de junio', 'de julio', 'de agosto', 'de septiembre', 'de octubre', 'de noviembre', 'de diciembre', 'de enero', 'de febrero', 'de marzo', 'ayer', '2025-', '2024-', '2026-'],
         patterns: [
             /\d{4}-\d{2}-\d{2}/i,
             /cu[aá]nto\s+vend[ií]\s+(el\s+)?\d{1,2}\s+de\s+\w+/i,
@@ -32,13 +38,29 @@ export const INTENT_CATALOG: IntentDef[] = [
             /cu[aá]nto\s+vend[ií]\s+ayer/i,
             /ventas?\s+(de\s+)?ayer/i,
             /el\s+\d{1,2}\s+de\s+\w+\s+cu[aá]nto/i,
-            /cu[aá]nto\s+vend[ií]\s+el\s+\d{1,2}/i,
-            /ventas?\s+del\s+\d{1,2}/i
+            /cu[aá]nto\s+vend[ií]\s+el\s+\d{1,2}(?!\d)/i,
+            /ventas?\s+del\s+\d{1,2}(?!\d)/i
         ],
         description: 'Ventas de una fecha específica (ej: "17 de abril", "ayer")',
         analyticsFn: 'getSalesForDate',
         supportsVisualization: true,
         followUps: ['¿Quieres ver las ventas de esta semana?', '¿Quieres ver tu ticket promedio?']
+    },
+    {
+        intent: 'sales_specific_year',
+        keywords: ['vendí este año', 'año pasado', 'ventas del año', 'el 2024', 'el 2025', 'el 2026', 'anual'],
+        patterns: [
+            /cu[aá]nto\s+vend[ií]\s+(este\s+a[ñn]o|el\s+a[ñn]o\s+pasado)/i,
+            /ventas?\s+(de\s|del\s)?(este\s+a[ñn]o|el\s+a[ñn]o\s+pasado)/i,
+            /cu[aá]nto\s+vend[ií]\s+(en\s+)?(el\s+)?202[4-6]/i,
+            /ventas?\s+(del?\s)?202[4-6]/i,
+            /ventas?\s+anuales?/i,
+            /cu[aá]nto\s+vend[ií]\s+al\s+a[ñn]o/i
+        ],
+        description: 'Ventas de un año específico o del año en curso',
+        analyticsFn: 'getSalesForYear',
+        supportsVisualization: true,
+        followUps: ['¿Quieres ver cómo fue mes a mes?', '¿Quieres ver la tendencia semanal?']
     },
     {
         intent: 'sales_this_week',
@@ -51,8 +73,8 @@ export const INTENT_CATALOG: IntentDef[] = [
     },
     {
         intent: 'sales_this_month',
-        keywords: ['vendí este mes', 'ventas mes', 'mensual'],
-        patterns: [/cu[aá]nto\s+vend[ií]\s+(este\s+)?mes/i, /ventas?\s+(de\s+)?(este\s+)?mes/i],
+        keywords: ['vendí este mes', 'ventas mes', 'mensual', 'este mes'],
+        patterns: [/cu[aá]nto\s+vend[ií]\s+(este\s+)?mes/i, /ventas?\s+(de\s+)?(este\s+)?mes/i, /cu[aá]nto\s+llevo\s+(este\s+)?mes/i],
         description: 'Total de ventas del mes actual',
         analyticsFn: 'getSalesForPeriod_month',
         supportsVisualization: true,
@@ -60,8 +82,8 @@ export const INTENT_CATALOG: IntentDef[] = [
     },
     {
         intent: 'sales_comparison',
-        keywords: ['comparar', 'vs mes pasado', 'respecto al mes', 'comparación', 'mes anterior'],
-        patterns: [/compar/i, /vs\s+mes/i, /respecto\s+al?\s+mes/i, /mes\s+(pasado|anterior)/i],
+        keywords: ['comparar', 'vs mes pasado', 'respecto al mes', 'comparación', 'mes anterior', 'cómo voy'],
+        patterns: [/compar/i, /vs\s+mes/i, /respecto\s+al?\s+mes/i, /mes\s+(pasado|anterior)/i, /c[oó]mo\s+voy\s+(comparado|vs|contra|respecto)/i],
         description: 'Comparación de ventas mes actual vs anterior',
         analyticsFn: 'comparePeriods',
         supportsVisualization: true,
@@ -69,9 +91,9 @@ export const INTENT_CATALOG: IntentDef[] = [
     },
     {
         intent: 'best_day',
-        keywords: ['mejor día', 'mejor dia', 'día más fuerte', 'dia mas fuerte', 'más vendí', 'mas vendi'],
-        patterns: [/mejor\s+d[ií]a/i, /d[ií]a\s+m[aá]s\s+(fuerte|alto|bueno)/i, /m[aá]s\s+vend[ií]/i],
-        description: 'El día con más ventas',
+        keywords: ['mejor día', 'mejor dia', 'día más fuerte', 'dia mas fuerte', 'más vendí', 'mas vendi', 'record'],
+        patterns: [/mejor\s+d[ií]a/i, /d[ií]a\s+m[aá]s\s+(fuerte|alto|bueno)/i, /m[aá]s\s+vend[ií]/i, /r[eé]cord\s+de\s+ventas?/i],
+        description: 'El día con más ventas en todo el historial',
         analyticsFn: 'getBestDay',
         supportsVisualization: false,
         followUps: ['¿Quieres ver cuál fue tu peor día?', '¿Quieres ver qué días de la semana son más fuertes?']
@@ -123,8 +145,8 @@ export const INTENT_CATALOG: IntentDef[] = [
     },
     {
         intent: 'sales_trend',
-        keywords: ['tendencia', 'cómo va', 'como va', 'hacia dónde van', 'evolución'],
-        patterns: [/tendencia/i, /c[oó]mo\s+va(n)?/i, /evoluci[oó]n/i, /hacia\s+d[oó]nde/i],
+        keywords: ['tendencia', 'cómo va', 'como va', 'hacia dónde van', 'evolución', 'cómo van mis ventas'],
+        patterns: [/tendencia/i, /c[oó]mo\s+va(n)?(\s+mis\s+ventas)?/i, /evoluci[oó]n/i, /hacia\s+d[oó]nde/i],
         description: 'Tendencia de ventas últimas 2 semanas',
         analyticsFn: 'getSalesTrend',
         supportsVisualization: true,
@@ -159,8 +181,8 @@ export const INTENT_CATALOG: IntentDef[] = [
     },
     {
         intent: 'proactive_alert',
-        keywords: ['consejo', 'recomendación', 'sugerencia', 'dame un tip', 'qué debería saber'],
-        patterns: [/consejo/i, /recomendaci[oó]n/i, /sugerencia/i, /tip/i, /qu[eé]\s+deber[ií]a\s+saber/i, /alerta/i],
+        keywords: ['consejo', 'recomendación', 'sugerencia', 'dame un tip', 'qué debería saber', 'ayúdame con mi negocio'],
+        patterns: [/consejo/i, /recomendaci[oó]n/i, /sugerencia/i, /tip/i, /qu[eé]\s+deber[ií]a\s+saber/i, /alerta/i, /ay[uú]dame?\s+con\s+mi\s+negocio/i],
         description: 'Solicita un consejo o alerta proactiva',
         analyticsFn: 'getProactiveAlerts',
         supportsVisualization: false,

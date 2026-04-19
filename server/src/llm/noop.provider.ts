@@ -26,4 +26,8 @@ export class NoopProvider implements LLMProvider {
     async classifyIntent(_message: string, _intents: any[]): Promise<string> {
         return 'unknown';
     }
+
+    async handleGeneralQuery(_message: string, merchantName: string): Promise<string> {
+        return `Puedo ayudarte con ventas, clientes, tendencias y datos de ${merchantName}. Si quieres, pregúntame algo como "¿cuánto vendí hoy?" o "¿cuál es mi ticket promedio?".`;
+    }
 }
